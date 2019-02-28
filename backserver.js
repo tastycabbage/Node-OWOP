@@ -153,13 +153,13 @@ function getTile(world, tileX, tileY) {
 }
 
 var motd = {
-	"main": "<h1 style=\"text-align:center; color: #66ffcc;\">Stewachip Custom OWOP</h1>" +
+	"main": "<h1 style=\"text-align:center; color: #66ffcc;\">Node OWOP</h1>" +
 	"<h2 style=\"text-align:center; color: #66ffcc;\">Rules:</h2>" +
 	"<ol style=\"color: #80b3ff;\">" +
 	"  <li>No rules, play fair yet.</li>" +
 	"</ol>" +
 	"<br>" +
-	"<li style=\"color: #ff0000;\">Discord: Stewachip#7474</li>" +
+	"<li style=\"color: #ff0000;\">Discord: @athias377#3326</li>" +
 	"<br>" 
 }
 
