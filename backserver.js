@@ -160,9 +160,7 @@ var motd = {
 	"</ol>" +
 	"<br>" +
 	"<li style=\"color: #ff0000;\">Discord: Stewachip#7474</li>" +
-	"<br>" +
-	"<li style=\"color: #ff0000;\">Thanks to mathias377 for providing me a new version of OWOP server</li>" +
-	"<br>"
+	"<br>" 
 }
 
 var worlds = {};
@@ -588,6 +586,27 @@ function wssOnConnection(ws, req) {
 							} else {
 								send("Invalid password");
 							}
+							/*} else if(cmdCheck[0] == "sendx" && (client.admin || client.mod)) { //usseles command
+							var times = Number(cmdCheck[1]);
+							
+							function currentWorldSend(msg) {
+							var clients = world.clients;
+															
+							for(var s = 0; s < clients.length; s++) {
+								var current_send = clients[s].send;
+								current_send(msg)
+							}
+						}
+							
+							var msg = command.split(" ");
+							msg.shift();
+							msg.shift()
+							msg = msg.join(" ");
+							
+							if(times && msg && times<=100) {
+								for(var i = 0; i < times; i++) {	
+									currentWorldSend(msg)
+								};*/
 						} else if(cmdCheck[0] == "disconnect") {
 							send("Disconnected");
 							ws.close();
@@ -638,14 +657,16 @@ function wssOnConnection(ws, req) {
 							var msg = command.split(" ");
 							msg.shift();
 							msg = msg.join(" ");
-							for(var gw in worlds) {
-								var worldCurrent = worlds[gw];
-								var clients = worldCurrent.clients;
-								for(var s = 0; s < clients.length; s++) {
-									var current_send = clients[s].send;
-									current_send(msg)
-								}
+							function currentWorldSend(msg) {
+							var clients = world.clients;
+															
+							for(var s = 0; s < clients.length; s++) {
+								var current_send = clients[s].send;
+								current_send(msg)
 							}
+						}
+							currentWorldSend(msg)
+							
 						} else if(cmdCheck[0] == "stealth" && client.admin == true || cmdCheck[0] == "stealth" && client.mod == true) {
 							if(!client.stealth) {
 								client.stealth = true;
