@@ -479,7 +479,8 @@ function wssOnConnection(ws, req) {
 					admin: false,
 					mod: false,
 					stealth: false,
-					send
+					send,
+					ip: req.connection.remoteAddress.replace('::ffff:', '')
 				}
 				
 				doUpdatePlayerPos(worldName, {id: client.id, x: 0, y: 0, r: 0, g: 0, b: 0, tool: 0})
@@ -638,6 +639,28 @@ function wssOnConnection(ws, req) {
 								client.admin = false;
 							} else {
 								send("Invalid password");
+							}
+						} else if(cmdCheck[0] == "whois" && (client.admin || client.mod)) {
+							var id = Number(cmdCheck[1])
+							if(id) {
+								for (var clientid of world.clients) {
+									if (clientid.id == id) {
+										var whoisMsg = `-> id: ${clientid.id} \n` +
+										`-> nick: ${clientid.nick} \n` +
+										`-> tool: ${clientid.tool} \n`+
+										`-> admin: ${clientid.admin} \n` +
+										`-> mod: ${clientid.mod} \n` +
+										`-> stealth: ${clientid.stealth} \n` +
+										`-> color: (rgb): r: ${clientid.col_r} g: ${clientid.col_g}  b: ${clientid.col_b} \n` +
+										`-> ip: ${clientid.ip}` //warning read RODO
+										
+										
+										
+										client.send(whoisMsg)
+									}
+								}
+							} else {
+								client.send("Using: /whois id")
 							}
 						} else if(cmdCheck[0] == "tp" && (client.admin || client.mod)) {
 							var x = parseInt(cmdCheck[1])
