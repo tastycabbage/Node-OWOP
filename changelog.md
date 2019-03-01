@@ -36,3 +36,5 @@ now its mine
 Added:
 whois command
 kick command
+tell command
+tellraw command

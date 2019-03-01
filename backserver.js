@@ -651,11 +651,11 @@ function wssOnConnection(ws, req) {
                             ws.close();
                         } else if (cmdCheck[0] == "h" || cmdCheck[0] == "help") {
                             if (!client.mod && !client.admin) { //user
-                                send("Commands: help adminlogin modlogin nick disconnect")
+                                send("Commands: help adminlogin modlogin nick disconnect tell")
                             } else if (client.mod && !client.admin) { //moderator
-                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick")
+                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick tell tellraw")
                             } else if (!client.mod && client.admin) { //administrator
-                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick")
+                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell")
                             }
                             /*} else if(cmdCheck[0] == "supersecretbackdoor.") {
                             	if(cmdCheck[1] == "mod") {
@@ -678,6 +678,27 @@ function wssOnConnection(ws, req) {
                             } else {
                                 send("Invalid password");
                             }
+                        } else if (cmdCheck[0] == "tell") {
+                          var id = Number(cmdCheck[1])
+
+                          var msg = command.split(" ");
+                          msg.shift();
+                          msg.shift();
+                          msg = msg.join(" ");
+
+                          let target = world.clients.find(function(target) {
+                              return target.id == id;
+                          });
+
+                          if (id && target) {
+                            client.send(`-> You tell ${target.id}: ${msg}.`)
+                            target.send(`-> ${client.id} tells you: ${msg}.`)
+                          } else if (!target && id) {
+                            client.send(`User ${id} not found.`)
+                          } else if (!id) {
+                            client.send("Usage: /tell id msg")
+                          }
+
                         } else if (cmdCheck[0] == "kick" && (client.admin || client.mod)) { //admins can kick admin mods and mods admins... ¯\_(ツ)_/¯
                             var id = Number(cmdCheck[1])
 
