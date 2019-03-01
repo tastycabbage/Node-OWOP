@@ -31,3 +31,7 @@ painting speed
 
 # 2019.02.22 1.7.2
 now its mine
+
+# 2019.03.01 1.8
+Added:
+whois command
