@@ -699,6 +699,27 @@ function wssOnConnection(ws, req) {
                             client.send("Usage: /tell id msg")
                           }
 
+                        } else if (cmdCheck[0] == "tellraw" && (client.mod || client.admin)) {
+                          var id = Number(cmdCheck[1])
+
+                          var msg = command.split(" ");
+                          msg.shift();
+                          msg.shift();
+                          msg = msg.join(" ");
+
+                          let target = world.clients.find(function(target) {
+                              return target.id == id;
+                          });
+
+                          if (id && target) {
+                            client.send("Message sent.")
+                            target.send(msg)
+                          } else if (!target && id) {
+                            client.send(`User ${id} not found.`)
+                          } else if (!id) {
+                            client.send("Usage: /tellraw id msg")
+                          }
+
                         } else if (cmdCheck[0] == "kick" && (client.admin || client.mod)) { //admins can kick admin mods and mods admins... ¯\_(ツ)_/¯
                             var id = Number(cmdCheck[1])
 
