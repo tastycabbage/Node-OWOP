@@ -607,7 +607,6 @@ function wssOnConnection(ws, req) {
                                 return;
                             }
                             var newNick = cmdCheck[1] || "";
-                            newNick.shift();
                             if (newNick.length < 1) return;
                             if (newNick.length <= 12 || isStaff) {
                                 client.nick = newNick;
