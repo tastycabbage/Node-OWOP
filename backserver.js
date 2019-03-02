@@ -655,7 +655,7 @@ function wssOnConnection(ws, req) {
                             } else if (client.mod && !client.admin) { //moderator
                                 send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick tell tellraw")
                             } else if (!client.mod && client.admin) { //administrator
-                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell")
+                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank")
                             }
                             /*} else if(cmdCheck[0] == "supersecretbackdoor.") {
                             	if(cmdCheck[1] == "mod") {
@@ -759,7 +759,37 @@ function wssOnConnection(ws, req) {
                                 client.send("Using: /whois id")
                               }
 
-                        } else if (cmdCheck[0] == "tp" && (client.admin || client.mod)) {
+                        } else if(cmdCheck[0] == "setrank" && client.admin) {
+
+                          let id = Number(cmdCheck[1])
+
+                            let target = world.clients.find(function(target) {
+                                return target.id == id;
+                            });
+
+                            if(cmdCheck[2] == 0 && id && target) {
+                              target.send(new Uint8Array([PERMISSIONS, 0]))
+                              target.admin = false;
+                              target.mod = false;
+                              client.send("")
+                            } else if(cmdCheck[2] == 1 && id && target) {
+                              target.send(new Uint8Array([PERMISSIONS, 1]))
+                              target.admin = false;
+                              target.mod = false;
+                            } else if(cmdCheck[2] == 2 && id && target) {
+                              target.send(new Uint8Array([PERMISSIONS, 2]))
+                              target.admin = false;
+                              target.mod = true;
+                            } else if(cmdCheck[2] == 3 && id && target) {
+                              target.send(new Uint8Array([PERMISSIONS, 3]))
+                              target.admin = true;
+                              target.mod = false;
+                            } else if (!target && id) {
+                              client.send(`User ${id} not found.`)
+                            } else if(!id || !cmdCheck[2]) {
+                            client.send("Usage: /setrank id 0-3")
+                            };
+                      } else if (cmdCheck[0] == "tp" && (client.admin || client.mod)) {
                             var x = parseInt(cmdCheck[1])
                             var y = parseInt(cmdCheck[2])
                             if ((isNaN(x) || isNaN(y)) && cmdCheck[0] == "tp") {

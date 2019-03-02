@@ -38,6 +38,10 @@ whois command
 kick command  
 tell command  
 tellraw command  
-  
+
 Fixed:  
 sayraw command
+
+# 2019.03.02 1.9.1
+added:  
+setrank command
