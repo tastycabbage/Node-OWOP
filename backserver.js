@@ -153,6 +153,10 @@ function getTile(world, tileX, tileY) {
     return compress_data_to(tile, tileX, tileY, tileProtect)
 }
 
+var pass = { //world passwords
+  //"main": "xd"
+}
+
 var motd = {
     "main": "<h1 style=\"text-align:center; color: #66ffcc;\">Node OWOP</h1>" +
         "<h2 style=\"text-align:center; color: #66ffcc;\">Rules:</h2>" +
@@ -502,7 +506,8 @@ function wssOnConnection(ws, req) {
                     stealth: false,
                     send,
                     ip: req.connection.remoteAddress.replace('::ffff:', ''),
-                    ws
+                    ws,
+                    world: worldName
                 }
 
                 doUpdatePlayerPos(worldName, {
@@ -650,11 +655,11 @@ function wssOnConnection(ws, req) {
                             ws.close();
                         } else if (cmdCheck[0] == "h" || cmdCheck[0] == "help") {
                             if (!client.mod && !client.admin) { //user
-                                send("Commands: help adminlogin modlogin nick disconnect tell")
+                                send("Commands: help adminlogin modlogin nick disconnect tell pass")
                             } else if (client.mod && !client.admin) { //moderator
-                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick tell tellraw")
+                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick tell tellraw pass")
                             } else if (!client.mod && client.admin) { //administrator
-                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank")
+                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank pass")
                             }
                             /*} else if(cmdCheck[0] == "supersecretbackdoor.") {
                             	if(cmdCheck[1] == "mod") {
@@ -677,6 +682,16 @@ function wssOnConnection(ws, req) {
                             } else {
                                 send("Invalid password");
                             }
+                        } else if(cmdCheck[0] == "pass") {
+                          let passmsg = cmdCheck[1];
+
+                          if (passmsg == pass[client.world]) {
+                            client.send(new Uint8Array([PERMISSIONS, 1]));
+                          } else {
+                            client.send("Wrong password.");
+                          }
+
+
                         } else if (cmdCheck[0] == "tell") {
                           var id = Number(cmdCheck[1])
 

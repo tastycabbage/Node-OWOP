@@ -45,3 +45,4 @@ sayraw command
 # 2019.03.02 1.9.1
 added:  
 setrank command
+pass command
