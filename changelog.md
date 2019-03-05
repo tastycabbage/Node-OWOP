@@ -1,4 +1,4 @@
-# 2019.02.16 v: 1.6.2
+# 2019.02.16 1.6.2
 Repaired many stuf:
 big letters in passwords and commands
 broadcast command
@@ -14,7 +14,7 @@ better chat console log
 unlimited nick for staf  
 unlimited chat typying for staff  
 
-# 2019.02.19 v: 1.7.1  
+# 2019.02.19 1.7.1  
 Fixed:  
 unlimited nick for users (again)  
 
@@ -22,7 +22,7 @@ unlimited nick for users (again)
 Added:  
 protect case (10)  
 
-# 2019.02.20 v: 1.7.2  
+# 2019.02.20 1.7.2  
 did better runbackserver.bat  
 
 # 2019.02.22 1.7.2  
@@ -46,3 +46,7 @@ sayraw command
 added:  
 setrank command
 pass command
+
+# 2019.03.05 1.9.2
+repaired:  
+tp command

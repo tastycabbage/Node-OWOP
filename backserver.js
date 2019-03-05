@@ -804,19 +804,69 @@ function wssOnConnection(ws, req) {
                             client.send("Usage: /setrank id 0-3")
                             };
                       } else if (cmdCheck[0] == "tp" && (client.admin || client.mod)) {
-                            var x = parseInt(cmdCheck[1])
-                            var y = parseInt(cmdCheck[2])
-                            if ((isNaN(x) || isNaN(y)) && cmdCheck[0] == "tp") {
-                                send("How to use it example: /tp 100 2000.");
-                                return;
+                        let target
+
+                        let x, y
+
+                        let message
+                        switch(cmdCheck.length) {
+                          case 4:
+                            //tp id x y
+                            target = world.clients.find(function(item) {
+                              return item.id == cmdCheck[1]
+                            })
+
+                            if(target) {
+                              x = cmdCheck[2]
+                              y = cmdCheck[3]
+                              message = `Teleported player ${cmdCheck[1]} to ${x},${y}`
+                            } else {
+                              message = `Error! Player '${cmdCheck[1]}' not found!`
                             }
-                            var tp = new Uint8Array(9)
-                            var tp_dv = new DataView(tp.buffer);
-                            tp_dv.setUint8(0, TELEPORT);
-                            tp_dv.setUint32(1, x, true);
-                            tp_dv.setUint32(5, y, true);
-                            send(tp)
-                            send("Teleported to x: " + x + " y: " + y + ".")
+                            break
+                          case 3:
+                            //tp x y
+                            target = client
+                            x = cmdCheck[1]
+                            y = cmdCheck[2]
+
+                            message = `Teleported to ${x} ${y}`
+                            break
+                          case 2:
+                            //tp id
+                            destination = world.clients.find(function(item) {
+                              return item.id == cmdCheck[1]
+                            })
+
+                            if(destination) {
+                              target = client
+                              x = Math.floor(destination.x_pos / 16)
+                              y = Math.floor(destination.y_pos / 16)
+                              message = `Teleported to player ${cmdCheck[1]} (${x},${y})`
+                            } else {
+                              message = `Error! Player '${cmdCheck[1]}' not found!`
+                            }
+                            break
+                          default:
+                            send("to change the position of another player: /tp id x y");
+                            send("to teleport to another player: /tp id");
+                            send("to change your location: /tp x y");
+                            break
+                        }
+
+                        if(target) {
+                          let tp = new Uint8Array(9)
+                          let tp_dv = new DataView(tp.buffer);
+
+                          tp_dv.setUint8(0, TELEPORT);
+                          tp_dv.setUint32(1, x, true);
+                          tp_dv.setUint32(5, y, true);
+
+                          target.send(tp);
+                          target.send(message)
+                        }
+
+
                         } else if (cmdCheck[0] == "sayraw" && (client.admin || client.mod)) {
                             var msg = command.split(" ");
                             msg.shift();
