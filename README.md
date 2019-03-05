@@ -6,4 +6,4 @@ Run installer, when it's done installing run starter, and enjoy Node OWOP
 
 # Credits
 FP (system2k) did this and repaired some stuf (2 things and some tips gived) </br>
-I'm repairing code
+I'm (mathias377) repairing code
