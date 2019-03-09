@@ -48,5 +48,9 @@ setrank command
 pass command
 
 # 2019.03.05 1.9.2
-repaired:  
+Repaired:  
 tp command
+
+# 2019.03.09 1.9.3
+Reapired:  
+nick command

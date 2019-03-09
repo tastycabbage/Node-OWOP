@@ -611,7 +611,9 @@ function wssOnConnection(ws, req) {
                                 send("Nickname reset.");
                                 return;
                             }
-                            var newNick = cmdCheck[1] || "";
+                            var newNick = command.split(" ");
+                            newNick.shift();
+                            newNick = newNick.join(" ")
                             if (newNick.length < 1) return;
                             if (newNick.length <= 12 || isStaff) {
                                 client.nick = newNick;
