@@ -542,6 +542,12 @@ function wssOnConnection(ws, req) {
                     send(motd[str]);
                 }
 
+                if(pass[str]) {
+                  send(" [Server] This world has a password set. Use '/pass PASSWORD' to unlock drawing.")
+                  send(new Uint8Array([PERMISSIONS, 0]))
+                }
+
+
                 // send client list to that client
                 for (var w in world.clients) {
                     var cli = world.clients[w];
@@ -625,7 +631,7 @@ function wssOnConnection(ws, req) {
                         } else if (cmdCheck[0] == "adminlogin") {
                             if (cmdCheck[1] == adminpw) {
                                 send(new Uint8Array([PERMISSIONS, 3]))
-                                send("Logged as administrator");
+                                send("Server: You are now an admin. Do /help for a list of commands.");
                                 client.admin = true;
                                 client.mod = false;
                             } else {
@@ -678,7 +684,7 @@ function wssOnConnection(ws, req) {
                         } else if (cmdCheck[0] == "modlogin") {
                             if (cmdCheck[1] == modpw) {
                                 send(new Uint8Array([PERMISSIONS, 2]))
-                                send("Logged as moderator");
+                                send("Server: You are now an mod. Do /help for a list of commands.");
                                 client.mod = true;
                                 client.admin = false;
                             } else {
