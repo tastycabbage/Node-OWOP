@@ -53,4 +53,7 @@ tp command
 
 # 2019.03.09 1.9.3
 Reapired:  
-nick command
+nick command  
+
+Added:  
+banip command

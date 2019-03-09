@@ -307,6 +307,16 @@ var db_updates = {
 var closeMsg = ":: This server will be closed shortly. It will be restarted";
 
 function wssOnConnection(ws, req) {
+
+  if (!fs.existsSync("./bans.txt")) {
+
+    fs.writeFile("./bans.txt", ``, function(err) {
+      if(err) {
+        return console.log(err);
+      }
+    });
+  }
+
     var ip = ws._socket.remoteAddress;
     var player = false;
     var client;
@@ -538,6 +548,15 @@ function wssOnConnection(ws, req) {
                 quota_dv.setUint16(3, 2, true);
                 send(quota)
 
+                var banned = fs.readFileSync("./bans.txt").toString().split("\n");
+
+
+                  for(i = 0; i < banned.length; i++) {
+                    if(banned[i] == client.ip) {
+                      client.send("You are banned. Apeal for unban on: https://discord.gg/DTGAq4b")
+                      ws.close()
+                    }}
+
                 if (motd[str]) {
                     send(motd[str]);
                 }
@@ -757,6 +776,47 @@ function wssOnConnection(ws, req) {
                             } else if (!id) {
                                 client.send("Usage: /kick id")
                             }
+                        } else if (cmdCheck[0] == "banip" && client.admin) {
+                            var ip = cmdCheck[1]
+
+                            target = world.clients.find(function(target) {
+                              return target.ip == cmdCheck[1]
+                            })
+
+                            if (ip) {
+                              if (fs.existsSync("./bans.txt")) {
+
+                                fs.appendFile("./bans.txt", `${ip} \n`, function (err) {
+                                  if (err) {
+                                    return console.log(err);
+                                  }
+
+                                });
+
+                          } else {
+
+                            fs.writeFile("./bans.txt", `${ip} \n`, function(err) {
+                              if(err) {
+                                return console.log(err);
+                              }
+                            });
+
+                        }
+
+
+                            client.send(`DEVBanned ip: ${ip}`)
+                            client.send(`Banned ip: ${ip}`)
+
+
+
+                            } else if(!target) {
+                              client.send(`User ip: ${ip} not found`)
+                            } else {
+                                client.send("Using: /banip ip")
+                            }
+
+
+
                         } else if (cmdCheck[0] == "whois" && client.admin) {
                             var id = Number(cmdCheck[1])
 
@@ -1043,6 +1103,16 @@ stdin.on("data", async function(key) {
 
 async function beginServer() {
     console.log("beginServer...");
+
+    if (!fs.existsSync("./bans.txt")) {
+
+      fs.writeFile("./bans.txt", ``, function(err) {
+        if(err) {
+          return console.log(err);
+        }
+      });
+    }
+
 
     await db.run("CREATE TABLE IF NOT EXISTS worlds (id INTEGER PRIMARY KEY, name TEXT NOT NULL)")
     await db.run("CREATE TABLE IF NOT EXISTS tiles (world INTEGER, x INTEGER, y INTEGER, data BLOB, protect BOOLEAN DEFAULT FALSE, PRIMARY KEY(world, x, y))")
