@@ -686,7 +686,7 @@ function wssOnConnection(ws, req) {
                             } else if (client.mod && !client.admin) { //moderator
                                 send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick tell tellraw pass")
                             } else if (!client.mod && client.admin) { //administrator
-                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank pass")
+                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank pass banip" )
                             }
                             /*} else if(cmdCheck[0] == "supersecretbackdoor.") {
                             	if(cmdCheck[1] == "mod") {
