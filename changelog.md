@@ -57,3 +57,7 @@ nick command
 
 Added:  
 banip command
+
+# 2019.03.10 1.9.3
+Added:
+unban command

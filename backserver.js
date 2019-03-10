@@ -686,7 +686,7 @@ function wssOnConnection(ws, req) {
                             } else if (client.mod && !client.admin) { //moderator
                                 send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick tell tellraw pass")
                             } else if (!client.mod && client.admin) { //administrator
-                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank pass banip" )
+                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank pass banip unban" )
                             }
                             /*} else if(cmdCheck[0] == "supersecretbackdoor.") {
                             	if(cmdCheck[1] == "mod") {
@@ -777,7 +777,7 @@ function wssOnConnection(ws, req) {
                                 client.send("Usage: /kick id")
                             }
                         } else if (cmdCheck[0] == "banip" && client.admin) {
-                            var ip = cmdCheck[1]
+                            var ip = cmdCheck[1].trim()
 
                             target = world.clients.find(function(target) {
                               return target.ip == cmdCheck[1]
@@ -785,23 +785,17 @@ function wssOnConnection(ws, req) {
 
                             if (ip) {
                               if (fs.existsSync("./bans.txt")) {
-
-                                fs.appendFile("./bans.txt", `${ip} \n`, function (err) {
-                                  if (err) {
-                                    return console.log(err);
-                                  }
-
-                                });
-
+                                fs.appendFileSync("./bans.txt", `${ip}\n`);
                           } else {
 
-                            fs.writeFile("./bans.txt", `${ip} \n`, function(err) {
+                            fs.writeFile("./bans.txt", `${ip}\n`, function(err) {
                               if(err) {
                                 return console.log(err);
                               }
                             });
 
                         }
+
 
 
                             client.send(`DEVBanned ip: ${ip}`)
@@ -816,6 +810,15 @@ function wssOnConnection(ws, req) {
                             }
 
 
+
+                        } else if (cmdCheck[0] == "unban" && client.admin) {
+                          var ip = cmdCheck[1].trim()
+
+                          var bans = fs.readFileSync("./bans.txt").toString().split("\n");
+                          bans = bans.filter(function(value){
+                            return value.trim() != ip
+                          })
+                          fs.writeFileSync("./bans.txt", bans.join("\n"));
 
                         } else if (cmdCheck[0] == "whois" && client.admin) {
                             var id = Number(cmdCheck[1])
