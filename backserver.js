@@ -796,10 +796,17 @@ function wssOnConnection(ws, req) {
 
                         }
 
+                        function sendStaff(message) {
+                          world.clients.forEach(function(client) {
+                            console.log(client)
+                            if (client.admin || client.mod) {
+                              client.send(message)
+                            }
+                          })
+                        }
 
+                        sendStaff(`DEVBanned ip: ${ip}`)
 
-                            client.send(`DEVBanned ip: ${ip}`)
-                            client.send(`Banned ip: ${ip}`)
 
 
 
