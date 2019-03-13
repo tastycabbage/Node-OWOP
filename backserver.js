@@ -619,7 +619,8 @@ function wssOnConnection(ws, req) {
                 };
                 if (chat.length <= 512 || isStaff) {
                     //console.log(worldName, before, chat)
-                    console.log("World name: " + worldName + ". Id/Nick: " + before + ". Message: " + chat + ".")
+                    //console.log("World name: " + worldName + ". Id/Nick: " + before + ". Message: " + chat + ".")
+                    console.log(`World name: ${client.world} id/nick: ${before} ip: ${client.ip} message: ${chat}`);
                     if (chat[0] != "/") {
                         var clients = world.clients;
                         for (var s = 0; s < clients.length; s++) {
