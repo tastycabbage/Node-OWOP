@@ -2,6 +2,7 @@ var fs = require("fs");
 var ws = require("ws");
 var sql = require("sqlite3").verbose();
 
+var ownerpw = "your_owner_pass"; //password for owner
 var adminpw = "your_admin_pass"; //password for admin
 var modpw = "your_mod_pass"; //password for moderator
 var global_chat_pw = "broadcast_pass"; //broadcast password
@@ -164,7 +165,11 @@ var motd = {
         "  <li>No rules, play fair yet.</li>" +
         "</ol>" +
         "<br>" +
-        "<li style=\"color: #ff0000;\">Discord: @athias377#3326</li>" +
+        "<a class=\"btn btn-primary\" href=https://discord.gg/DTGAq4b target=_blank>my owop discord server</a>" +
+        "<br>" +
+        "<a class=\"btn btn-primary\" href=https://discord.gg/eBtPYp7 target=_blank>my cursors io hack discord server</a>" +
+        "<br>" +
+        "<li style=\"color: #ff0000;\">Discord: @mathias377#3326</li>" +
         "<br>"
 }
 
@@ -513,6 +518,7 @@ function wssOnConnection(ws, req) {
                     nick: "",
                     admin: false,
                     mod: false,
+                    owner: false,
                     stealth: false,
                     send,
                     ip: req.connection.remoteAddress.replace('::ffff:', ''),
@@ -587,6 +593,7 @@ function wssOnConnection(ws, req) {
             var isMod = client.mod;
             var isAdmin = client.admin;
             var isStaff = (isMod || isAdmin);
+            var isOwner = client.owner;
             var stealth = client.stealth;
             var id = client.id;
 
@@ -600,8 +607,9 @@ function wssOnConnection(ws, req) {
             }
 
             var before = "";
-            if (tmp_isMod) before += ""; //here you can add mod "(M)"
-            if (tmp_isAdmin) before += ""; //here you can add admin "(A)"
+            if (tmp_isMod) before += "(M) ";
+            if (tmp_isAdmin && !isOwner) before += "(A) ";
+            if (tmp_isOwner) before += "(O) ";
             if (nick && !tmp_isStaff) {
                 before += "[" + id + "] " + nick;
             } else if (nick && tmp_isStaff) {
@@ -648,15 +656,15 @@ function wssOnConnection(ws, req) {
                                 return;
                             }
                             send("Nickname set to: '" + newNick + "'");
-                        } else if (cmdCheck[0] == "adminlogin") {
-                            if (cmdCheck[1] == adminpw) {
-                                send(new Uint8Array([PERMISSIONS, 3]))
-                                send("Server: You are now an admin. Do /help for a list of commands.");
-                                client.admin = true;
-                                client.mod = false;
-                            } else {
-                                send("Invalid password");
-                            }
+                          } else if (cmdCheck[0] == "adminlogin") {
+                              if (cmdCheck[1] == adminpw) {
+                                  send(new Uint8Array([PERMISSIONS, 3]))
+                                  send("Server: You are now an admin. Do /help for a list of commands.");
+                                  client.admin = true;
+                                  client.mod = false;
+                                } else {
+                                  send("Invalid password");
+                                }
                             /*} else if(cmdCheck[0] == "sendx" && (client.admin || client.mod)) { //usseles command
 							var times = Number(cmdCheck[1]);
 
@@ -678,6 +686,15 @@ function wssOnConnection(ws, req) {
 								for(var i = 0; i < times; i++) {
 									currentWorldSend(msg)
 								};*/
+                        } else if (cmdCheck[0] == "ownerlogin") {
+                          if (cmdCheck[1] == ownerpw) {
+                              send(new Uint8Array([PERMISSIONS, 3]))
+                              send("Server: You are now an owner. Do /help for a list of commands.");
+                              client.owner = true;
+                              client.admin = true
+                              client.mod = false;
+                          }
+
                         } else if (cmdCheck[0] == "disconnect") {
                             send("Disconnected");
                             ws.close();
@@ -1166,6 +1183,7 @@ async function beginServer() {
     setTimeout(function() {
         console.log(" ");
         console.log(" ");
+        console.log("Ownerlogin: " + ownerpw);
         console.log("Adminlogin: " + adminpw);
         console.log("Modlogin: " + modpw);
         console.log("Broadcast pass: " + global_chat_pw);

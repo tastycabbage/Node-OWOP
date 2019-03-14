@@ -61,3 +61,8 @@ banip command
 # 2019.03.10 1.9.3
 Added:
 unban command
+
+# 2019.03.14 1.9.4
+Added:
+ownerlogin command
+Owner rank (ugly)
