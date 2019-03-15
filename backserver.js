@@ -601,6 +601,7 @@ function wssOnConnection(ws, req) {
             var tmp_isAdmin = isAdmin;
             var tmp_isStaff = isStaff;
             if (stealth) {
+                tmp_isOwner = false;
                 tmp_isMod = false;
                 tmp_isAdmin = false;
                 tmp_isStaff = false;
