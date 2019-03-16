@@ -704,9 +704,9 @@ function wssOnConnection(ws, req) {
                             if (!client.mod && !client.admin) { //user
                                 send("Commands: help adminlogin modlogin nick disconnect tell pass")
                             } else if (client.mod && !client.admin) { //moderator
-                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick tell tellraw pass")
+                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick tell tellraw pass getid")
                             } else if (!client.mod && client.admin) { //administrator
-                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank pass banip unban" )
+                                send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank pass banip unban getid" )
                             }
                             /*} else if(cmdCheck[0] == "supersecretbackdoor.") {
                             	if(cmdCheck[1] == "mod") {
@@ -847,6 +847,36 @@ function wssOnConnection(ws, req) {
                           })
                           fs.writeFileSync("./bans.txt", bans.join("\n"));
 
+                        } else if (cmdCheck[0] == "chatclear" && (client.mod || client.admin)) {
+
+                          function currentWorldSend(msg) {
+                              var clients = world.clients;
+
+                              for (var s = 0; s < clients.length; s++) {
+                                  var current_send = clients[s].send;
+                                  current_send(msg);
+                              }
+                          }
+
+                          currentWorldSend("<img src='waitoof' onerror='console.clear(); OWOP.chat.clear();''></img>");
+                        } else if (cmdCheck[0] == "getid" && (client.mod || client.admin)) {
+                          var nick = command.split(" ");
+                          nick.shift();
+                          nick = nick.join(" ")
+
+                          let target = world.clients.find(function(target) {
+                              return target.nick == nick;
+                          });
+                          if(nick && target) {
+                            client.send(`Id: ${target.id}`)
+                          } else if(nick && !target) {
+                            client.send("User not found.")
+                          } else {
+                            client.send("Usage: /getid nick")
+                            client.send("To find html nick go to console and get his html nick.")
+                          }
+
+
                         } else if (cmdCheck[0] == "whois" && client.admin) {
                             var id = Number(cmdCheck[1])
 
@@ -855,14 +885,19 @@ function wssOnConnection(ws, req) {
                             });
 
                               if (id && target) {
-                                        var whoisMsg = `-> id: ${target.id} \n` +
-                                            `-> nick: ${target.nick} \n` +
-                                            `-> tool: ${target.tool} \n` +
-                                            `-> admin: ${target.admin} \n` +
-                                            `-> mod: ${target.mod} \n` +
-                                            `-> stealth: ${target.stealth} \n` +
-                                            `-> color: (rgb): r: ${target.col_r} g: ${target.col_g}  b: ${target.col_b} \n` +
-                                            `-> ip: ${target.ip}` //warning read RODO
+                                var x = Math.floor(target.x_pos / 16)
+                                var y = Math.floor(target.y_pos / 16)
+
+                                var whoisMsg = `-> id: ${target.id}\n` +
+                                    `-> nick: ${target.nick}\n` +
+                                    `-> tool: ${target.tool}\n` +
+                                    `-> admin: ${target.admin}\n` +
+                                    `-> mod: ${target.mod}\n` +
+                                    `-> coords: ${x} ${y}\n` +
+                                    `-> stealth: ${target.stealth}\n` +
+                                    `-> color: (rgb): r: ${target.col_r} g: ${target.col_g}  b: ${target.col_b}\n` +
+                                    `-> ip: ${target.ip}\n` + //warning read RODO
+                                    `-> origin: ${target.req.url}`
 
                                         client.send(whoisMsg)
                                       } else if(!target && id) {

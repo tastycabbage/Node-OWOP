@@ -59,10 +59,16 @@ Added:
 banip command
 
 # 2019.03.10 1.9.3
-Added:
+Added:  
 unban command
 
 # 2019.03.14 1.9.4
-Added:
-ownerlogin command
+Added:  
+ownerlogin command  
 Owner rank (ugly)
+
+# 2019.03.16 1.9.5
+Added:  
+getid command  
+clearchat command  
+added coords to whois command
