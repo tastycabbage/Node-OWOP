@@ -1,13 +1,25 @@
 {
-    "name": "node owop",
-    "version": "1.7.2",
-    "description": "OWOP for fun",
-    "dependencies": {
-        "sqlite3": "^4.0.6",
-        "ws": "^6.1.3"
-    },
-    "scripts": {
-        "start": "node server.js; node backserver.js"
-    },
-    "private": true
+  "name": "Node OWOP",
+  "description": "It's simple node js OWOP server",
+  "version": "1.9.7",
+  "keywords": [
+    "Node OWOP",
+    "OWOP for spammers",
+    "OWOP",
+    "OWOP server"
+  ],
+  "contributors": [
+    {
+      "name": "mathias377",
+      "email": "",
+      "web": ""
+    }
+  ],
+  "dependencies": {
+    "file-system": "^2.2.2",
+    "fs": "^0.0.1-security",
+    "ws": "^6.2.0",
+    "sqlite3": "^4.0.6"
+  },
+  "homepage": "https://github.com/mathmakgakpak/Node-OWOP"
 }
