@@ -395,13 +395,7 @@ function wssOnConnection(ws, req) {
                     var r = dv.getUint8(8);
                     var g = dv.getUint8(9);
                     var b = dv.getUint8(10);
-                    doUpdatePixel(worldName, {
-                        x,
-                        y,
-                        r,
-                        g,
-                        b
-                    })
+                    
 
                     var tileX = Math.floor(x / 16);
                     var tileY = Math.floor(y / 16);
@@ -409,6 +403,17 @@ function wssOnConnection(ws, req) {
                     var pixY = y - Math.floor(y / 16) * 16;
 
                     var tile_str = tileX + "," + tileY;
+					
+					if(world.tiles_protect[tile_str] && (!client.admin || !client.mod || !client.owner)) {
+						return;
+					}
+					doUpdatePixel(worldName, {
+                        x,
+                        y,
+                        r,
+                        g,
+                        b
+                    })
 
                     if (!world.tiles[tile_str]) {
                         world.tiles[tile_str] = new Uint8Array(16 * 16 * 3);
