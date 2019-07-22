@@ -2,10 +2,11 @@ var fs = require("fs");
 var ws = require("ws");
 var sql = require("sqlite3").verbose();
 
-var ownerpw = "your_owner_pass"; //password for owner
 var adminpw = "your_admin_pass"; //password for admin
 var modpw = "your_mod_pass"; //password for moderator
 var global_chat_pw = "broadcast_pass"; //broadcast password
+var iplimitbool = false;
+var iplimit = 3;
 
 var WSPort = 7000;
 var database = new sql.Database("./file_with_worlds.db");
@@ -404,7 +405,7 @@ function wssOnConnection(ws, req) {
 
                     var tile_str = tileX + "," + tileY;
 					
-					if(world.tiles_protect[tile_str] && client.admin == false && client.mod == false && client.owner == false) {
+					if(world.tiles_protect[tile_str] && client.admin == false && client.mod == false) {
 						return;
 					}
 					doUpdatePixel(worldName, {
@@ -523,9 +524,9 @@ function wssOnConnection(ws, req) {
                     nick: "",
                     admin: false,
                     mod: false,
-                    owner: false,
                     stealth: false,
                     send,
+					req,
                     ip: req.connection.remoteAddress.replace('::ffff:', ''),
                     ws,
                     world: worldName
@@ -562,11 +563,26 @@ function wssOnConnection(ws, req) {
                 var banned = fs.readFileSync("./bans.txt").toString().split("\n");
 
 
-                  for(i = 0; i < banned.length; i++) {
+                  for(var i = 0; i < banned.length; i++) {
                     if(banned[i] == client.ip) {
                       client.send("You are banned. Apeal for unban on: https://discord.gg/DTGAq4b")
                       ws.close()
                     }}
+					if(iplimitbool) {
+						var connectionsfromhim = 0
+						for(var i = 0; i < world.clients.length; i++) {
+					if(world.clients[i].ip == client.ip) {
+						connectionsfromhim++
+					}
+					
+				}
+				if(connectionsfromhim > iplimit)  {
+						client.send("Too many connections from you.")
+						ws.close()
+						
+				}
+					}
+				
 
                 if (motd[str]) {
                     send(motd[str]);
@@ -598,16 +614,13 @@ function wssOnConnection(ws, req) {
             var isMod = client.mod;
             var isAdmin = client.admin;
             var isStaff = (isMod || isAdmin);
-            var isOwner = client.owner;
             var stealth = client.stealth;
             var id = client.id;
 
             var tmp_isMod = isMod;
             var tmp_isAdmin = isAdmin;
             var tmp_isStaff = isStaff;
-            var tmp_isOwner = isOwner;
             if (stealth) {
-                tmp_isOwner = false;
                 tmp_isMod = false;
                 tmp_isAdmin = false;
                 tmp_isStaff = false;
@@ -615,8 +628,7 @@ function wssOnConnection(ws, req) {
 
             var before = "";
             if (tmp_isMod) before += "(M) ";
-            if (tmp_isAdmin && !isOwner) before += "(A) ";
-            if (tmp_isOwner) before += "(O) ";
+            if (tmp_isAdmin) before += "(A) ";
             if (nick && !tmp_isStaff) {
                 before += "[" + id + "] " + nick;
             } else if (nick && tmp_isStaff) {
@@ -693,15 +705,6 @@ function wssOnConnection(ws, req) {
 								for(var i = 0; i < times; i++) {
 									currentWorldSend(msg)
 								};*/
-                        } else if (cmdCheck[0] == "ownerlogin") {
-                          if (cmdCheck[1] == ownerpw) {
-                              send(new Uint8Array([PERMISSIONS, 3]))
-                              send("Server: You are now an owner. Do /help for a list of commands.");
-                              client.owner = true;
-                              client.admin = true
-                              client.mod = false;
-                          }
-
                         } else if (cmdCheck[0] == "disconnect") {
                             send("Disconnected");
                             ws.close();
@@ -1225,7 +1228,6 @@ async function beginServer() {
     setTimeout(function() {
         console.log(" ");
         console.log(" ");
-        console.log("Ownerlogin: " + ownerpw);
         console.log("Adminlogin: " + adminpw);
         console.log("Modlogin: " + modpw);
         console.log("Broadcast pass: " + global_chat_pw);
