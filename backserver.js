@@ -404,7 +404,7 @@ function wssOnConnection(ws, req) {
 
                     var tile_str = tileX + "," + tileY;
 					
-					if(world.tiles_protect[tile_str] && (!client.admin || !client.mod || !client.owner)) {
+					if(world.tiles_protect[tile_str] && client.admin == false && client.mod == false && client.owner == false) {
 						return;
 					}
 					doUpdatePixel(worldName, {
