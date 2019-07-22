@@ -405,7 +405,7 @@ function wssOnConnection(ws, req) {
 
                     var tile_str = tileX + "," + tileY;
 					
-					if(world.tiles_protect[tile_str] && client.admin == false && client.mod == false) {
+					if(world.tiles_protect[tile_str] && !client.admin && !client.mod) {
 						return;
 					}
 					doUpdatePixel(worldName, {
@@ -427,11 +427,14 @@ function wssOnConnection(ws, req) {
                     world.tiles[tile_str][idx + 0] = r;
                     world.tiles[tile_str][idx + 1] = g;
                     world.tiles[tile_str][idx + 2] = b;
-
                     if (!db_updates.tile_upd[worldName]) {
                         db_updates.tile_upd[worldName] = {};
                     }
                     db_updates.tile_upd[worldName][tile_str] = world.tiles[tile_str];
+					if (!db_updates.tile_protect[worldName]) {
+                        db_updates.tile_protect[worldName] = {};
+                    }
+					db_updates.tile_protect[worldName][tile_str] = world.tiles_protect[tile_str];
                     break;
                 case 12: //every player pos update
                     var x = dv.getInt32(0, true);
@@ -1080,6 +1083,7 @@ async function saveDatabase() {
     var new_worlds = db_updates.new_worlds;
     var tile_upd = db_updates.tile_upd;
     var tile_protect = db_updates.tile_protect;
+	
 
     db_updates.new_worlds = {};
     db_updates.tile_upd = {};
