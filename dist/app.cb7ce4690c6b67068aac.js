@@ -1371,8 +1371,8 @@ function init() {
 	viewport.addEventListener("touchcancel", touchEventNoUpdate('touchcancel'), { passive: true });
 
 	// Some cool custom css
-	console.log("%c" + " _ _ _         _   _    _____ ___    _____ _         _     \n" + "| | | |___ ___| |_| |  |     |  _|  |  _  |_|_ _ ___| |___ \n" + "| | | | . |  _| | . |  |  |  |  _|  |   __| |_'_| -_| |_ -|\n" + "|_____|___|_| |_|___|  |_____|_|    |__|  |_|_,_|___|_|___|", "font-size: 15px; font-weight: bold;");
-	console.log("%cWelcome to the developer console!", "font-size: 20px; font-weight: bold; color: #F0F;");
+	console.log("%c" + "───────╔╗╔╗────────╔═══╦═══╦═══╗╔═══╦╗╔╗╔╦═══╦═══╗ \n" + "──────╔╝╚╣║────────║╔═╗║╔═╗║╔═╗║║╔═╗║║║║║║╔═╗║╔═╗║ \n" + "╔╗╔╦══╬╗╔╣╚═╦╦══╦══╬╝╔╝╠╝╔╝╠╝╔╝║║║─║║║║║║║║─║║╚═╝║ \n" + "║╚╝║╔╗║║║║╔╗╠╣╔╗║══╬╗╚╗║─║╔╝─║╔╝║║─║║╚╝╚╝║║─║║╔══╝ \n" + "║║║║╔╗║║╚╣║║║║╔╗╠══║╚═╝║─║║──║║─║╚═╝╠╗╔╗╔╣╚═╝║║ \n" + "╚╩╩╩╝╚╝╚═╩╝╚╩╩╝╚╩══╩═══╝─╚╝──╚╝─╚═══╝╚╝╚╝╚═══╩╝", "font-size: 15px; font-weight: bold; color: #0099ff;");
+	console.log("%cWelcome to the developer console! Can u dont change anything here!!!", "font-size: 20px; font-weight: bold; color: #ff0000;");
 
 	//windowSys.addWindow(new OWOPDropDown());
 	(0, _all.resolveProtocols)();
@@ -1382,7 +1382,7 @@ function init() {
 
 	updateXYDisplay(0, 0);
 
-	var worldName = decodeURIComponent(window.location.pathname);
+	var worldName = decodeURIComponent(window.location.hash.slice(1));
 	if (worldName[0] === '/') {
 		worldName = worldName.slice(1);
 	}
@@ -1452,7 +1452,7 @@ _global.eventSys.on(_conf.EVENTS.net.world.setId, function (id) {
 	var desiredRank = localStorage.adminlogin ? _conf.RANK.ADMIN : localStorage.modlogin ? _conf.RANK.MODERATOR : _networking.net.protocol.worldName in misc.worldPasswords ? _conf.RANK.USER : _conf.RANK.NONE;
 	if (desiredRank > _conf.RANK.NONE) {
 		var onWrong = function onWrong() {
-			console.log("WRONG");
+			console.log("FAIL!!");
 			_global.eventSys.removeListener(_conf.EVENTS.net.sec.rank, onCorrect);
 			if (desiredRank == _conf.RANK.ADMIN) {
 				delete localStorage.adminlogin;
@@ -2441,7 +2441,7 @@ var toolSelected = null;
 	[0xF4, 0xF4, 0xF4], [0x93, 0xB6, 0xC1], [0x55, 0x71, 0x85], [0x32, 0x40, 0x56]
 ];*/
 // ENDESGA 16 palette
-var palette = [[0xE4, 0xA6, 0x72], [0xB8, 0x6F, 0x50], [0x74, 0x3F, 0x39], [0x3F, 0x28, 0x32], [0x9E, 0x28, 0x35], [0xE5, 0x3B, 0x44], [0xFB, 0x92, 0x2B], [0xFF, 0xE7, 0x62], [0x63, 0xC6, 0x4D], [0x32, 0x73, 0x45], [0x19, 0x3D, 0x3F], [0x4F, 0x67, 0x81], [0xAF, 0xBF, 0xD2], [0xFF, 0xFF, 0xFF], [0x2C, 0xE8, 0xF4], [0x04, 0x84, 0xD1]];
+var palette = [[0xFF, 0xFF, 0xFF], [0xE4, 0xA6, 0x72], [0xB8, 0x6F, 0x50], [0x74, 0x3F, 0x39], [0x3F, 0x28, 0x32], [0x9E, 0x28, 0x35], [0xE5, 0x3B, 0x44], [0xFB, 0x92, 0x2B], [0xFF, 0xE7, 0x62], [0x63, 0xC6, 0x4D], [0x32, 0x73, 0x45], [0x19, 0x3D, 0x3F], [0x4F, 0x67, 0x81], [0xAF, 0xBF, 0xD2], [0xFF, 0xFF, 0xFF], [0x2C, 0xE8, 0xF4], [0x04, 0x84, 0xD1]];
 var paletteIndex = 0;
 
 var undoHistory = exports.undoHistory = [];
@@ -2959,13 +2959,13 @@ var _tool_renderer = __webpack_require__(13);
 
 var _networking = __webpack_require__(8);
 
-var _local_player = __webpack_require__(6);
+var _local_player2 = __webpack_require__(6);
 
-var _canvas_renderer = __webpack_require__(5);
+var _canvas_renderer2 = __webpack_require__(5);
 
 var _windowsys = __webpack_require__(11);
 
-var _main = __webpack_require__(3);
+var _main2 = __webpack_require__(3);
 
 var _Fx = __webpack_require__(7);
 
@@ -2987,7 +2987,7 @@ function updateToolWindow(name) {
 		button.className = isSelected ? 'selected' : '';
 		button.children[0].style.backgroundImage = "url(" + (isSelected ? _tool_renderer.cursors.slotset : _tool_renderer.cursors.set.src) + ")";
 	}
-	_main.elements.viewport.style.cursor = "url(" + tool.cursorblob + ") " + tool.offset[0] + " " + tool.offset[1] + ", pointer";
+	_main2.elements.viewport.style.cursor = "url(" + tool.cursorblob + ") " + tool.offset[0] + " " + tool.offset[1] + ", pointer";
 }
 
 function updateToolbar() {
@@ -3000,8 +3000,8 @@ function updateToolbar() {
 	var container = win.container;
 	var toolButtonClick = function toolButtonClick(name) {
 		return function (event) {
-			_local_player.player.tool = name;
-			_main.sounds.play(_main.sounds.click);
+			_local_player2.player.tool = name;
+			_main2.sounds.play(_main2.sounds.click);
 		};
 	};
 
@@ -3010,13 +3010,13 @@ function updateToolbar() {
 	// Add tools to the tool-select menu
 	for (var name in tools) {
 		var tool = tools[name];
-		if (_local_player.player.rank >= tool.rankRequired) {
+		if (_local_player2.player.rank >= tool.rankRequired) {
 			var element = document.createElement("button");
 			var mask = document.createElement("div");
 			(0, _misc.setTooltip)(element, tool.name + " tool");
 			element.id = "tool-" + name;
 			element.addEventListener("click", toolButtonClick(name));
-			if (tool === _local_player.player.tool) {
+			if (tool === _local_player2.player.tool) {
 				mask.style.backgroundImage = "url(" + _tool_renderer.cursors.slotset + ")";
 				element.className = "selected";
 			} else {
@@ -3149,7 +3149,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		tool.setEvent('mousedown mousemove', function (mouse, event) {
 			var usedButtons = 3; /* Left and right mouse buttons are always used... */
 			/* White color if right clicking */
-			var color = mouse.buttons === 2 ? [255, 255, 255] : _local_player.player.selectedColor;
+			var color = mouse.buttons === 2 ? [255, 255, 255] : _local_player2.player.selectedColor;
 			switch (mouse.buttons) {
 				case 1:
 				case 2:
@@ -3158,9 +3158,9 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 						lastY = mouse.tileY;
 					}
 					(0, _misc.line)(lastX, lastY, mouse.tileX, mouse.tileY, 1, function (x, y) {
-						var pixel = _main.misc.world.getPixel(x, y);
+						var pixel = _main2.misc.world.getPixel(x, y);
 						if (pixel !== null && !(color[0] === pixel[0] && color[1] === pixel[1] && color[2] === pixel[2])) {
-							_main.misc.world.setPixel(x, y, color);
+							_main2.misc.world.setPixel(x, y, color);
 						}
 					});
 					lastX = mouse.tileX;
@@ -3169,9 +3169,9 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 				case 4:
 					if (event.ctrlKey) {
 						usedButtons |= 4;
-						var color = _main.misc.world.getPixel(mouse.tileX, mouse.tileY);
+						var color = _main2.misc.world.getPixel(mouse.tileX, mouse.tileY);
 						if (color) {
-							_local_player.player.selectedColor = color;
+							_local_player2.player.selectedColor = color;
 						}
 					}
 					break;
@@ -3181,6 +3181,200 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		tool.setEvent('mouseup', function (mouse) {
 			lastX = null;
 			lastY = null;
+		});
+	}));
+
+	//brush tool
+	addTool(new Tool('Brush', _tool_renderer.cursors.brush, _Fx.PLAYERFX.NONE, _conf.RANK.ADMIN, function (tool) {
+		var brDiameter = 5; //Declaring variable for brush diameter.
+		var rainbowPressed = null;
+		var lastX, lastY;
+
+		tool.setEvent('mousedown mousemove', function (mouse, event) {
+			var usedButtons = 3; //Left and right mouse buttons are always used...
+			var color = mouse.buttons === 2 ? [255, 255, 255] : OWOP.player.selectedColor; //White color if right clicking
+			switch (OWOP.mouse.buttons) {
+				case 1:
+				case 2:
+					if (!lastX || !lastY) {
+						lastX = OWOP.mouse.tileX;
+						lastY = OWOP.mouse.tileY;
+					}
+					(0, OWOP.util.line)(lastX, lastY, OWOP.mouse.tileX, OWOP.mouse.tileY, 1, function (x, y) {
+						var pixel = OWOP.world.getPixel(x, y);
+						var R = Math.floor(brDiameter / 2);
+						if (pixel !== null) {
+							if (!rainbowPressed && mouse.buttons == 1) {
+								for (var ix = 0; ix < brDiameter; ix++) {
+									for (var iy = 0; iy < brDiameter; iy++) {
+										OWOP.world.setPixel(x + ix - R, y + iy - R, color);
+									}
+								}
+							} else if (rainbowPressed && mouse.buttons == 1) {
+								for (var ix = 0; ix < brDiameter; ix++) {
+									for (var iy = 0; iy < brDiameter; iy++) {
+										OWOP.world.setPixel(x + ix - R, y + iy - R, [Math.random() * 255 | 0, Math.random() * 255 | 0, Math.random() * 255 | 0]);
+									}
+								}
+							} else if (mouse.buttons == 2) {
+								for (var ix = 0; ix < brDiameter; ix++) {
+									for (var iy = 0; iy < brDiameter; iy++) {
+										OWOP.world.setPixel(x + ix - R, y + iy - R, [255, 255, 255]);
+									}
+								}
+							}
+						}
+					});
+					lastX = OWOP.mouse.tileX;
+					lastY = OWOP.mouse.tileY;
+					break;
+				case 4:
+					if (event.ctrlKey) {
+						usedButtons |= 4;
+						var color = _OWOP.world.getPixel(mouse.tileX, mouse.tileY);
+						if (color) {
+							OWOP.player.selectedColor = color;
+						}
+					}
+					break;
+			}
+			return usedButtons;
+		});
+		tool.setEvent('mouseup', function (mouse) {
+			lastX = null;
+			lastY = null;
+		});
+		if (OWOP.player.rank == 3) {
+			var brDiamWin = OWOP.windowSys.addWindow(new OWOP.windowSys.class.window('Brush diameter', {}, function (win) {
+				win.container.title = 'Sets brush diameter. (duh)';
+				win.container.style.height = '16px';
+				win.container.style.overflow = 'hidden';
+
+				var brDiamElm = OWOP.util.mkHTML('span', { innerHTML: brDiameter });
+				win.addObj(brDiamElm);
+				var Rbar = OWOP.util.mkHTML('input', {
+					type: 'range', style: '-moz-appearance:none;-webkit-appearance:none;appearance:none;height:6px;outline:none;float:right;',
+					min: 2, max: 16,
+					value: brDiameter,
+					oninput: function oninput() {
+						brDiameter = this.value;
+						brDiamElm.innerHTML = this.value;
+					}, ondblclick: function ondblclick() {
+						this.value = 3;
+						this.onchange();
+					}
+				});
+				win.addObj(Rbar);
+			}).move(945, 32));
+		}
+	}));
+
+	//Text Tool
+	OWOP.tool.addToolObject(new OWOP.tool.class("Text", _tool_renderer.cursors.write, _Fx.PLAYERFX.NONE, OWOP.RANK.USER, function (tool) {
+		var xPos = null;
+		var yPos = null;
+		var fonts = {};
+		var font = null;
+
+		var fontInput = new OWOP.windowSys.class.input("Choose Font when no work do enter and say after u enter   . .", 955, "number", function (value) {
+			var id = parseInt(value);
+			if (id in fonts) {
+				font = id;
+				return;
+			}
+
+			var xhttp = new XMLHttpRequest();
+			xhttp.addEventListener("load", function () {
+				var source = xhttp.responseXML.body.children[2].innerHTML;
+				var data = JSON.parse(source.match(/loadData\('(.+)'\)/)[1]);
+				var meta = source.match(/drawSample\('',([0-9]+),(-?[0-9]+)\)/);
+				data.letterspace = parseInt(meta[1]);
+				data.monospacewidth = parseInt(meta[2]);
+
+				fonts[id] = data;
+				font = id;
+			});
+			xhttp.open("GET", "https://cors-anywhere.herokuapp.com/http://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=" + id);
+			xhttp.responseType = "document";
+			xhttp.send();
+		});
+
+		var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+		chars += "¡¢£€¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
+		chars += "ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽž";
+
+		tool.setFxRenderer(function (fx, ctx, time) {
+			var x = fx.extra.player.x;
+			var y = fx.extra.player.y;
+			if (xPos !== null && yPos !== null) {
+				x = xPos * 16;
+				y = yPos * 16;
+			}
+			var fxx = (Math.floor(x / 16) - OWOP.camera.x) * OWOP.camera.zoom;
+			var fxy = (Math.floor(y / 16) - OWOP.camera.y) * OWOP.camera.zoom;
+			ctx.globalAlpha = 0.8;
+			ctx.strokeStyle = fx.extra.player.htmlRgb;
+			ctx.strokeRect(fxx, fxy, OWOP.camera.zoom, OWOP.camera.zoom * 12);
+			return 0;
+		});
+
+		tool.setEvent("select", function () {
+			OWOP.windowSys.addWindow(fontInput);
+		});
+		tool.setEvent("deselect", function () {
+			font = null;
+		});
+
+		tool.setEvent("mousedown mousemove", function (mouse, event) {
+			if (mouse.buttons === 1) {
+				xPos = mouse.tileX;
+				yPos = mouse.tileY;
+			}
+		});
+		tool.setEvent("keydown", function () {
+			return true;
+		});
+		tool.setEvent("keyup", function () {
+			return true;
+		});
+
+		window.addEventListener("keypress", function (event) {
+			if (font === null || xPos === null || yPos === null || ["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+				return;
+			}
+
+			var f = fonts[font];
+			var letterSpacing = (f.letterspace / 64 | 0) - 1;
+			var isMono = f.monospacewidth !== -1;
+
+			if (event.which == 32) {
+				xPos += isMono ? f.monospacewidth : 4 + letterSpacing;
+				return;
+			}
+
+			var char = f[event.which];
+			if (!char) {
+				return;
+			}
+
+			var width = 0;
+			for (var y = 0; y < 16; y++) {
+				for (var x = 0; x < 16; x++) {
+					if (char[y] & 1 << x && x > width) width = x;
+				}
+			}
+
+			var color = OWOP.player.palette[OWOP.player.paletteIndex];
+			for (var y = 0; y < 16; y++) {
+				for (var x = 0; x < 16; x++) {
+					if (!(char[y] & 1 << x)) {
+						continue;
+					}
+					OWOP.world.setPixel(xPos + x - 2, yPos + y, color);
+				}
+			}
+
+			xPos += isMono ? f.monospacewidth : width + letterSpacing;
 		});
 	}));
 
@@ -3219,11 +3413,232 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		});
 	}));
 
+	// Move tool
+	addTool(new Tool('Move', _tool_renderer.cursors.move, _Fx.PLAYERFX.NONE, _conf.RANK.NONE, function (tool) {
+		function move(x, y, startX, startY) {
+			(0, _canvas_renderer2.moveCameraBy)((startX - x) / 16, (startY - y) / 16);
+		}
+		tool.setEvent('mousemove', function (mouse, event) {
+			if (mouse.buttons !== 0) {
+				move(mouse.worldX, mouse.worldY, mouse.mouseDownWorldX, mouse.mouseDownWorldY);
+				return mouse.buttons;
+			}
+		});
+		tool.setEvent('scroll', function (mouse, event, rawEvent) {
+			if (!rawEvent.ctrlKey) {
+				var dx = Math.max(-500, Math.min(event.spinX * 16, 500));
+				var dy = Math.max(-500, Math.min(event.spinY * 16, 500));
+				var pxAmount = _canvas_renderer2.camera.zoom; //Math.max(camera.zoom, 2);
+				(0, _canvas_renderer2.moveCameraBy)(dx / pxAmount, dy / pxAmount);
+				return true;
+			}
+		});
+	}));
+
+	// Pipette tool
+	addTool(new Tool('Pipette', _tool_renderer.cursors.pipette, _Fx.PLAYERFX.NONE, _conf.RANK.NONE, function (tool) {
+		tool.setEvent('mousedown mousemove', function (mouse, event) {
+			if (mouse.buttons !== 0 && !(mouse.buttons & 4)) {
+				var color = _main2.misc.world.getPixel(mouse.tileX, mouse.tileY);
+				if (color) {
+					_local_player2.player.selectedColor = color;
+				}
+				return mouse.buttons;
+			}
+		});
+	}));
+
+	//Area Erase
+	addTool(new Tool('Area Erase', _tool_renderer.cursors.areaerase, _Fx.PLAYERFX.RECT_SELECT_ALIGNED(16), _conf.RANK.MODERATOR, function (tool) {
+		function drawText(ctx, str, x, y, centered) {
+			ctx.strokeStyle = "#000000", ctx.fillStyle = "#FFFFFF", ctx.lineWidth = 2.5, ctx.globalAlpha = 0.5;
+			if (centered) {
+				x -= ctx.measureText(str).width >> 1;
+			}
+			ctx.strokeText(str, x, y);
+			ctx.globalAlpha = 1;
+			ctx.fillText(str, x, y);
+		}
+
+		tool.setFxRenderer(function (fx, ctx, time) {
+			if (!fx.extra.isLocalPlayer) return 1;
+			var x = fx.extra.player.x;
+			var y = fx.extra.player.y;
+			var fxx = (Math.round(x / 256) * 16 - OWOP.camera.x) * OWOP.camera.zoom;
+			var fxy = (Math.round(y / 256) * 16 - OWOP.camera.y) * OWOP.camera.zoom;
+			var oldlinew = ctx.lineWidth;
+			ctx.lineWidth = 1;
+			if (tool.extra.end) {
+				var s = tool.extra.start;
+				var e = tool.extra.end;
+				var x = (s[0] * 16 - OWOP.camera.x) * OWOP.camera.zoom + 0.5;
+				var y = (s[1] * 16 - OWOP.camera.y) * OWOP.camera.zoom + 0.5;
+				var rw = e[0] - s[0];
+				var rh = e[1] - s[1];
+				var w = rw * OWOP.camera.zoom * 16;
+				var h = rh * OWOP.camera.zoom * 16;
+				ctx.beginPath();
+				ctx.rect(x, y, w, h);
+				ctx.globalAlpha = 1;
+				ctx.strokeStyle = "#FFFFFF";
+				ctx.stroke();
+				ctx.setLineDash([3, 4]);
+				ctx.strokeStyle = "#000000";
+				ctx.stroke();
+				if (tool.extra.isSure) {
+					ctx.globalAlpha = 0.6;
+					ctx.fillStyle = "#00EE00";
+					ctx.fill();
+				}
+				ctx.globalAlpha = 0.25 + Math.sin(time / 500) / 4;
+				ctx.fillStyle = OWOP.renderer.patterns.unloaded;
+				ctx.fill();
+				ctx.setLineDash([]);
+				var oldfont = ctx.font;
+				ctx.font = "16px sans-serif";
+				var txt = (tool.extra.isSure ? "Click again to confirm. " : !tool.extra.clicking ? "Click to erase. " : "") + '(' + Math.abs(rw) + 'x' + Math.abs(rh) + ')';
+				var txtx = window.innerWidth >> 1;
+				var txty = window.innerHeight >> 1;
+				txtx = Math.max(x, Math.min(txtx, x + w));
+				txty = Math.max(y, Math.min(txty, y + h));
+
+				drawText(ctx, txt, txtx, txty, true);
+				ctx.font = oldfont;
+				ctx.lineWidth = oldlinew;
+				return 0;
+			} else {
+				ctx.beginPath();
+				ctx.moveTo(0, fxy + 0.5);
+				ctx.lineTo(window.innerWidth, fxy + 0.5);
+				ctx.moveTo(fxx + 0.5, 0);
+				ctx.lineTo(fxx + 0.5, window.innerHeight);
+
+				//ctx.lineWidth = 1;
+				ctx.globalAlpha = 1;
+				ctx.strokeStyle = "#FFFFFF";
+				ctx.stroke();
+				ctx.setLineDash([3]);
+				ctx.strokeStyle = "#000000";
+				ctx.stroke();
+
+				ctx.setLineDash([]);
+				ctx.lineWidth = oldlinew;
+				return 1;
+			}
+		});
+
+		tool.extra.start = null;
+		tool.extra.end = null;
+		tool.extra.clicking = false;
+		tool.extra.isSure = false;
+
+		var timeout = null;
+
+		var sure = function sure() {
+			if (tool.extra.isSure) {
+				clearTimeout(timeout);
+				timeout = null;
+				tool.extra.isSure = false;
+				return true;
+			}
+			tool.extra.isSure = true;
+			setTimeout(function () {
+				tool.extra.isSure = false;
+				timeout = null;
+			}, 1000);
+			return false;
+		};
+
+		tool.setEvent('mousedown', function (mouse, event) {
+			var get = {
+				rx: function rx() {
+					return mouse.tileX / 16;
+				},
+				ry: function ry() {
+					return mouse.tileY / 16;
+				},
+				x: function x() {
+					return Math.round(mouse.tileX / 16);
+				},
+				y: function y() {
+					return Math.round(mouse.tileY / 16);
+				}
+			};
+			var s = tool.extra.start;
+			var e = tool.extra.end;
+			var isInside = function isInside() {
+				return get.rx() >= s[0] && get.rx() < e[0] && get.ry() >= s[1] && get.ry() < e[1];
+			};
+			if (mouse.buttons === 1 && !tool.extra.end) {
+				tool.extra.start = [get.x(), get.y()];
+				tool.extra.clicking = true;
+				tool.setEvent('mousemove', function (mouse, event) {
+					if (tool.extra.start && mouse.buttons === 1) {
+						tool.extra.end = [get.x(), get.y()];
+						return 1;
+					}
+				});
+				var finish = function finish() {
+					tool.setEvent('mousemove mouseup deselect', null);
+					tool.extra.clicking = false;
+					var s = tool.extra.start;
+					var e = tool.extra.end;
+					if (e) {
+						if (s[0] === e[0] || s[1] === e[1]) {
+							tool.extra.start = null;
+							tool.extra.end = null;
+						}
+						if (s[0] > e[0]) {
+							var tmp = e[0];
+							e[0] = s[0];
+							s[0] = tmp;
+						}
+						if (s[1] > e[1]) {
+							var tmp = e[1];
+							e[1] = s[1];
+							s[1] = tmp;
+						}
+					}
+					OWOP.renderer.render(OWOP.renderer.rendertype.FX);
+				};
+				tool.setEvent('deselect', finish);
+				tool.setEvent('mouseup', function (mouse, event) {
+					if (!(mouse.buttons & 1)) {
+						finish();
+					}
+				});
+			} else if (tool.extra.end) {
+				if (isInside() && sure()) {
+					tool.extra.start = null;
+					tool.extra.end = null;
+					var _ref = [s[0], s[1], e[0] - s[0], e[1] - s[1]],
+					    x = _ref[0],
+					    y = _ref[1],
+					    w = _ref[2],
+					    h = _ref[3];
+
+					for (var i = x; i < x + w; i++) {
+						for (var j = y; j < y + h; j++) {
+							if (mouse.buttons & 1) {
+								OWOP.net.protocol.clearChunk(i, j, OWOP.player.selectedColor);
+							} else {
+								OWOP.net.protocol.clearChunk(i, j, [255, 255, 255]);
+							}
+						}
+					}
+				} else if (!isInside()) {
+					tool.extra.start = null;
+					tool.extra.end = null;
+				}
+			}
+		});
+	}));
+
 	// Erase/Fill tool
 	addTool(new Tool('Eraser', _tool_renderer.cursors.erase, _Fx.PLAYERFX.RECT_SELECT_ALIGNED(16), _conf.RANK.ADMIN, function (tool) {
 		function fillChunk(chunkX, chunkY, c) {
 			var color = c[2] << 16 | c[1] << 8 | c[0];
-			var chunk = _main.misc.world.getChunkAt(chunkX, chunkY);
+			var chunk = _main2.misc.world.getChunkAt(chunkX, chunkY);
 			if (chunk) {
 				var empty = true;
 				firstLoop: for (var y = 0; y < _conf.protocol.chunkSize; y++) {
@@ -3243,7 +3658,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 
 		tool.setEvent('mousedown mousemove', function (mouse, event) {
 			if (mouse.buttons & 1) {
-				fillChunk(Math.floor(mouse.tileX / _conf.protocol.chunkSize), Math.floor(mouse.tileY / _conf.protocol.chunkSize), _local_player.player.selectedColor);
+				fillChunk(Math.floor(mouse.tileX / _conf.protocol.chunkSize), Math.floor(mouse.tileY / _conf.protocol.chunkSize), _local_player2.player.selectedColor);
 				return 1;
 			} else if (mouse.buttons & 2) {
 				fillChunk(Math.floor(mouse.tileX / _conf.protocol.chunkSize), Math.floor(mouse.tileY / _conf.protocol.chunkSize), [255, 255, 255]);
@@ -3255,8 +3670,8 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 	// Zoom tool
 	addTool(new Tool('Zoom', _tool_renderer.cursors.zoom, _Fx.PLAYERFX.NONE, _conf.RANK.NONE, function (tool) {
 		function zoom(mouse, type) {
-			var lzoom = _canvas_renderer.camera.zoom;
-			var nzoom = _canvas_renderer.camera.zoom;
+			var lzoom = _canvas_renderer2.camera.zoom;
+			var nzoom = _canvas_renderer2.camera.zoom;
 			var offX = 0;
 			var offY = 0;
 			var w = window.innerWidth;
@@ -3276,9 +3691,9 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 				nzoom = _conf.options.defaultZoom;
 			}
 			nzoom = Math.round(nzoom);
-			_canvas_renderer.camera.zoom = nzoom;
-			if (_canvas_renderer.camera.zoom !== lzoom) {
-				(0, _canvas_renderer.moveCameraBy)(offX, offY);
+			_canvas_renderer2.camera.zoom = nzoom;
+			if (_canvas_renderer2.camera.zoom !== lzoom) {
+				(0, _canvas_renderer2.moveCameraBy)(offX, offY);
 			}
 		}
 
@@ -3304,19 +3719,19 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 			if (!fx.extra.isLocalPlayer) return 1;
 			var x = fx.extra.player.x;
 			var y = fx.extra.player.y;
-			var fxx = (Math.floor(x / 16) - _canvas_renderer.camera.x) * _canvas_renderer.camera.zoom;
-			var fxy = (Math.floor(y / 16) - _canvas_renderer.camera.y) * _canvas_renderer.camera.zoom;
+			var fxx = (Math.floor(x / 16) - _canvas_renderer2.camera.x) * _canvas_renderer2.camera.zoom;
+			var fxy = (Math.floor(y / 16) - _canvas_renderer2.camera.y) * _canvas_renderer2.camera.zoom;
 			var oldlinew = ctx.lineWidth;
 			ctx.lineWidth = 1;
 			if (tool.extra.end) {
 				var s = tool.extra.start;
 				var e = tool.extra.end;
-				var x = (s[0] - _canvas_renderer.camera.x) * _canvas_renderer.camera.zoom + 0.5;
-				var y = (s[1] - _canvas_renderer.camera.y) * _canvas_renderer.camera.zoom + 0.5;
+				var x = (s[0] - _canvas_renderer2.camera.x) * _canvas_renderer2.camera.zoom + 0.5;
+				var y = (s[1] - _canvas_renderer2.camera.y) * _canvas_renderer2.camera.zoom + 0.5;
 				var w = e[0] - s[0];
 				var h = e[1] - s[1];
 				ctx.beginPath();
-				ctx.rect(x, y, w * _canvas_renderer.camera.zoom, h * _canvas_renderer.camera.zoom);
+				ctx.rect(x, y, w * _canvas_renderer2.camera.zoom, h * _canvas_renderer2.camera.zoom);
 				ctx.globalAlpha = 1;
 				ctx.strokeStyle = "#FFFFFF";
 				ctx.stroke();
@@ -3324,7 +3739,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 				ctx.strokeStyle = "#000000";
 				ctx.stroke();
 				ctx.globalAlpha = 0.25 + Math.sin(time / 500) / 4;
-				ctx.fillStyle = _canvas_renderer.renderer.patterns.unloaded;
+				ctx.fillStyle = _canvas_renderer2.renderer.patterns.unloaded;
 				ctx.fill();
 				ctx.setLineDash([]);
 				var oldfont = ctx.font;
@@ -3332,10 +3747,10 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 				var txt = (!tool.extra.clicking ? "Right click to screenshot " : "") + '(' + Math.abs(w) + 'x' + Math.abs(h) + ')';
 				var txtx = window.innerWidth >> 1;
 				var txty = window.innerHeight >> 1;
-				txtx = Math.max(x, Math.min(txtx, x + w * _canvas_renderer.camera.zoom));
-				txty = Math.max(y, Math.min(txty, y + h * _canvas_renderer.camera.zoom));
+				txtx = Math.max(x, Math.min(txtx, x + w * _canvas_renderer2.camera.zoom));
+				txty = Math.max(y, Math.min(txty, y + h * _canvas_renderer2.camera.zoom));
 
-				(0, _canvas_renderer.drawText)(ctx, txt, txtx, txty, true);
+				(0, _canvas_renderer2.drawText)(ctx, txt, txtx, txty, true);
 				ctx.font = oldfont;
 				ctx.lineWidth = oldlinew;
 				return 0;
@@ -3368,7 +3783,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 			var d = ctx.createImageData(w, h);
 			for (var i = y; i < y + h; i++) {
 				for (var j = x; j < x + w; j++) {
-					var pix = _main.misc.world.getPixel(j, i);
+					var pix = _main2.misc.world.getPixel(j, i);
 					if (!pix) continue;
 					d.data[4 * ((i - y) * w + (j - x))] = pix[0];
 					d.data[4 * ((i - y) * w + (j - x)) + 1] = pix[1];
@@ -3420,7 +3835,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 							s[1] = tmp;
 						}
 					}
-					_canvas_renderer.renderer.render(_canvas_renderer.renderer.rendertype.FX);
+					_canvas_renderer2.renderer.render(_canvas_renderer2.renderer.rendertype.FX);
 				};
 				tool.setEvent('deselect', finish);
 				tool.setEvent('mouseup', function (mouse, event) {
@@ -3499,13 +3914,13 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		tool.setFxRenderer(function (fx, ctx, time) {
 			ctx.globalAlpha = 0.8;
 			ctx.strokeStyle = fx.extra.player.htmlRgb;
-			var z = _canvas_renderer.camera.zoom;
+			var z = _canvas_renderer2.camera.zoom;
 			if (!fillingColor || !fx.extra.isLocalPlayer) {
 				defaultFx(fx, ctx, time);
 			} else {
 				ctx.beginPath();
 				for (var i = 0; i < queue.length; i++) {
-					ctx.rect((queue[i][0] - _canvas_renderer.camera.x) * z, (queue[i][1] - _canvas_renderer.camera.y) * z, z, z);
+					ctx.rect((queue[i][0] - _canvas_renderer2.camera.x) * z, (queue[i][1] - _canvas_renderer2.camera.y) * z, z, z);
 				}
 				ctx.stroke();
 			}
@@ -3515,7 +3930,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 				return a && b && a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
 			};
 			var check = function check(x, y) {
-				if (eq(_main.misc.world.getPixel(x, y), fillingColor)) {
+				if (eq(_main2.misc.world.getPixel(x, y), fillingColor)) {
 					queue.unshift([x, y]);
 					return true;
 				}
@@ -3526,16 +3941,16 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 				return;
 			}
 
-			var selClr = _local_player.player.selectedColor;
+			var selClr = _local_player2.player.selectedColor;
 			var painted = 0;
 			var tickAmount = tool.extra.tickAmount;
 			for (var painted = 0; painted < tickAmount && queue.length; painted++) {
 				var current = queue.pop();
 				var x = current[0];
 				var y = current[1];
-				var thisClr = _main.misc.world.getPixel(x, y);
+				var thisClr = _main2.misc.world.getPixel(x, y);
 				if (eq(thisClr, fillingColor) && !eq(thisClr, selClr)) {
-					if (!_main.misc.world.setPixel(x, y, selClr)) {
+					if (!_main2.misc.world.setPixel(x, y, selClr)) {
 						queue.push(current);
 						break;
 					}
@@ -3570,7 +3985,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		}
 		tool.setEvent('mousedown', function (mouse) {
 			if (!(mouse.buttons & 4)) {
-				fillingColor = _main.misc.world.getPixel(mouse.tileX, mouse.tileY);
+				fillingColor = _main2.misc.world.getPixel(mouse.tileX, mouse.tileY);
 				if (fillingColor) {
 					queue.push([mouse.tileX, mouse.tileY]);
 					tool.setEvent('tick', tick);
@@ -3614,13 +4029,13 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		tool.setFxRenderer(function (fx, ctx, time) {
 			ctx.globalAlpha = 0.8;
 			ctx.strokeStyle = fx.extra.player.htmlRgb;
-			var z = _canvas_renderer.camera.zoom;
+			var z = _canvas_renderer2.camera.zoom;
 			if (!start || !end || !fx.extra.isLocalPlayer) {
 				defaultFx(fx, ctx, time);
 			} else {
 				ctx.beginPath();
 				line(start[0], start[1], end[0], end[1], function (x, y) {
-					ctx.rect((x - _canvas_renderer.camera.x) * _canvas_renderer.camera.zoom, (y - _canvas_renderer.camera.y) * _canvas_renderer.camera.zoom, _canvas_renderer.camera.zoom, _canvas_renderer.camera.zoom);
+					ctx.rect((x - _canvas_renderer2.camera.x) * _canvas_renderer2.camera.zoom, (y - _canvas_renderer2.camera.y) * _canvas_renderer2.camera.zoom, _canvas_renderer2.camera.zoom, _canvas_renderer2.camera.zoom);
 				});
 				ctx.stroke();
 			}
@@ -3628,9 +4043,9 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		function tick() {
 			for (var painted = 0; painted < 3 && queue.length; painted++) {
 				var current = queue.pop();
-				var c = _main.misc.world.getPixel(current[0], current[1]);
-				var pc = _local_player.player.selectedColor;
-				if ((c[0] != pc[0] || c[1] != pc[1] || c[2] != pc[2]) && !_main.misc.world.setPixel(current[0], current[1], _local_player.player.selectedColor)) {
+				var c = _main2.misc.world.getPixel(current[0], current[1]);
+				var pc = _local_player2.player.selectedColor;
+				if ((c[0] != pc[0] || c[1] != pc[1] || c[2] != pc[2]) && !_main2.misc.world.setPixel(current[0], current[1], _local_player2.player.selectedColor)) {
 					queue.push(current);
 					break;
 				}
@@ -3662,9 +4077,9 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 					end = null;
 					return;
 				}
-				if (_local_player.player.rank == _conf.RANK.ADMIN) {
+				if (_local_player2.player.rank == _conf.RANK.ADMIN) {
 					line(start[0], start[1], end[0], end[1], function (x, y) {
-						_main.misc.world.setPixel(x, y, _local_player.player.selectedColor);
+						_main2.misc.world.setPixel(x, y, _local_player2.player.selectedColor);
 					});
 					start = null;
 					end = null;
@@ -3688,22 +4103,22 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		tool.setFxRenderer(function (fx, ctx, time) {
 			var x = fx.extra.player.x;
 			var y = fx.extra.player.y;
-			var fxx = (Math.floor(x / 256) * 16 - _canvas_renderer.camera.x) * _canvas_renderer.camera.zoom;
-			var fxy = (Math.floor(y / 256) * 16 - _canvas_renderer.camera.y) * _canvas_renderer.camera.zoom;
+			var fxx = (Math.floor(x / 256) * 16 - _canvas_renderer2.camera.x) * _canvas_renderer2.camera.zoom;
+			var fxy = (Math.floor(y / 256) * 16 - _canvas_renderer2.camera.y) * _canvas_renderer2.camera.zoom;
 			ctx.globalAlpha = 0.5;
 			var chunkX = Math.floor(fx.extra.player.tileX / _conf.protocol.chunkSize);
 			var chunkY = Math.floor(fx.extra.player.tileY / _conf.protocol.chunkSize);
-			var chunk = _main.misc.world.getChunkAt(chunkX, chunkY);
+			var chunk = _main2.misc.world.getChunkAt(chunkX, chunkY);
 			if (chunk) {
 				ctx.fillStyle = chunk.locked ? "#00FF00" : "#FF0000";
-				ctx.fillRect(fxx, fxy, _canvas_renderer.camera.zoom * 16, _canvas_renderer.camera.zoom * 16);
+				ctx.fillRect(fxx, fxy, _canvas_renderer2.camera.zoom * 16, _canvas_renderer2.camera.zoom * 16);
 			}
 			return 1; /* Rendering finished (won't change on next frame) */
 		});
 		tool.setEvent('mousedown mousemove', function (mouse) {
 			var chunkX = Math.floor(mouse.tileX / _conf.protocol.chunkSize);
 			var chunkY = Math.floor(mouse.tileY / _conf.protocol.chunkSize);
-			var chunk = _main.misc.world.getChunkAt(chunkX, chunkY);
+			var chunk = _main2.misc.world.getChunkAt(chunkX, chunkY);
 			switch (mouse.buttons) {
 				case 1:
 					if (!chunk.locked) {
@@ -3720,13 +4135,381 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		});
 	}));
 
-	addTool(new Tool('Paste', _tool_renderer.cursors.paste, _Fx.PLAYERFX.NONE, _conf.RANK.ADMIN, function (tool) {
+	addTool(new Tool('Area Protect', _tool_renderer.cursors.selectprotect, _Fx.PLAYERFX.NONE, _conf.RANK.MODERATOR, function (tool) {
 		tool.setFxRenderer(function (fx, ctx, time) {
-			var z = _canvas_renderer.camera.zoom;
+			if (!fx.extra.isLocalPlayer) return 1;
 			var x = fx.extra.player.x;
 			var y = fx.extra.player.y;
-			var fxx = Math.floor(x / 16) - _canvas_renderer.camera.x;
-			var fxy = Math.floor(y / 16) - _canvas_renderer.camera.y;
+			var fxx = (Math.round(x / 256) * _conf.protocol.chunkSize - _canvas_renderer2.camera.x) * _canvas_renderer2.camera.zoom;
+			var fxy = (Math.round(y / 256) * _conf.protocol.chunkSize - _canvas_renderer2.camera.y) * _canvas_renderer2.camera.zoom;
+			var oldlinew = ctx.lineWidth;
+			ctx.lineWidth = 1;
+			if (tool.extra.end) {
+				var s = tool.extra.start;
+				var e = tool.extra.end;
+				var x = (s[0] * _conf.protocol.chunkSize - _canvas_renderer2.camera.x) * _canvas_renderer2.camera.zoom + 0.5;
+				var y = (s[1] * _conf.protocol.chunkSize - _canvas_renderer2.camera.y) * _canvas_renderer2.camera.zoom + 0.5;
+				var rw = e[0] - s[0];
+				var rh = e[1] - s[1];
+				var w = rw * _canvas_renderer2.camera.zoom * _conf.protocol.chunkSize;
+				var h = rh * _canvas_renderer2.camera.zoom * _conf.protocol.chunkSize;
+				ctx.beginPath();
+				ctx.rect(x, y, w, h);
+				ctx.globalAlpha = 1;
+				ctx.strokeStyle = "#FFFFFF";
+				ctx.stroke();
+				ctx.setLineDash([3, 4]);
+				ctx.strokeStyle = "#000000";
+				ctx.stroke();
+				if (tool.extra.isSure) {
+					ctx.globalAlpha = 0.6;
+					ctx.fillStyle = "#00EE00";
+					ctx.fill();
+				}
+				ctx.globalAlpha = 0.25 + Math.sin(time / 500) / 4;
+				ctx.fillStyle = _canvas_renderer2.renderer.patterns.unloaded;
+				ctx.fill();
+				ctx.setLineDash([]);
+				var oldfont = ctx.font;
+				ctx.font = "16px sans-serif";
+				var txt = (tool.extra.isSure ? "Click again to confirm. " : !tool.extra.clicking ? "Left/Right click to add/remove protection, respectively. " : "") + '(' + Math.abs(rw) + 'x' + Math.abs(rh) + ')';
+				var txtx = window.innerWidth >> 1;
+				var txty = window.innerHeight >> 1;
+				txtx = Math.max(x, Math.min(txtx, x + w));
+				txty = Math.max(y, Math.min(txty, y + h));
+
+				(0, _canvas_renderer2.drawText)(ctx, txt, txtx, txty, true);
+				ctx.font = oldfont;
+				ctx.lineWidth = oldlinew;
+				return 0;
+			} else {
+				ctx.beginPath();
+				ctx.moveTo(0, fxy + 0.5);
+				ctx.lineTo(window.innerWidth, fxy + 0.5);
+				ctx.moveTo(fxx + 0.5, 0);
+				ctx.lineTo(fxx + 0.5, window.innerHeight);
+
+				//ctx.lineWidth = 1;
+				ctx.globalAlpha = 1;
+				ctx.strokeStyle = "#FFFFFF";
+				ctx.stroke();
+				ctx.setLineDash([3]);
+				ctx.strokeStyle = "#000000";
+				ctx.stroke();
+
+				ctx.setLineDash([]);
+				ctx.lineWidth = oldlinew;
+				return 1;
+			}
+		});
+
+		tool.extra.start = null;
+		tool.extra.end = null;
+		tool.extra.clicking = false;
+		tool.extra.isSure = false;
+
+		var timeout = null;
+
+		var sure = function sure() {
+			if (tool.extra.isSure) {
+				clearTimeout(timeout);
+				timeout = null;
+				tool.extra.isSure = false;
+				return true;
+			}
+			tool.extra.isSure = true;
+			setTimeout(function () {
+				tool.extra.isSure = false;
+				timeout = null;
+			}, 1000);
+			return false;
+		};
+
+		tool.setEvent('mousedown', function (mouse, event) {
+			var get = {
+				rx: function rx() {
+					return mouse.tileX / _conf.protocol.chunkSize;
+				},
+				ry: function ry() {
+					return mouse.tileY / _conf.protocol.chunkSize;
+				},
+				x: function x() {
+					return Math.round(mouse.tileX / _conf.protocol.chunkSize);
+				},
+				y: function y() {
+					return Math.round(mouse.tileY / _conf.protocol.chunkSize);
+				}
+			};
+			var s = tool.extra.start;
+			var e = tool.extra.end;
+			var isInside = function isInside() {
+				return get.rx() >= s[0] && get.rx() < e[0] && get.ry() >= s[1] && get.ry() < e[1];
+			};
+			if (mouse.buttons === 1 && !tool.extra.end) {
+				tool.extra.start = [get.x(), get.y()];
+				tool.extra.clicking = true;
+				tool.setEvent('mousemove', function (mouse, event) {
+					if (tool.extra.start && mouse.buttons === 1) {
+						tool.extra.end = [get.x(), get.y()];
+						return 1;
+					}
+				});
+				var finish = function finish() {
+					tool.setEvent('mousemove mouseup deselect', null);
+					tool.extra.clicking = false;
+					var s = tool.extra.start;
+					var e = tool.extra.end;
+					if (e) {
+						if (s[0] === e[0] || s[1] === e[1]) {
+							tool.extra.start = null;
+							tool.extra.end = null;
+						}
+						if (s[0] > e[0]) {
+							var tmp = e[0];
+							e[0] = s[0];
+							s[0] = tmp;
+						}
+						if (s[1] > e[1]) {
+							var tmp = e[1];
+							e[1] = s[1];
+							s[1] = tmp;
+						}
+					}
+					_canvas_renderer2.renderer.render(_canvas_renderer2.renderer.rendertype.FX);
+				};
+				tool.setEvent('deselect', finish);
+				tool.setEvent('mouseup', function (mouse, event) {
+					if (!(mouse.buttons & 1)) {
+						finish();
+					}
+				});
+			} else if (mouse.buttons === 1 && tool.extra.end) {
+				if (isInside() && sure()) {
+					tool.extra.start = null;
+					tool.extra.end = null;
+					var _ref2 = [s[0], s[1], e[0] - s[0], e[1] - s[1]],
+					    x = _ref2[0],
+					    y = _ref2[1],
+					    w = _ref2[2],
+					    h = _ref2[3];
+
+					for (var i = x; i < x + w; i++) {
+						for (var j = y; j < y + h; j++) {
+							var chunk = _main2.misc.world.getChunkAt(i, j);
+							if (chunk && !chunk.locked) {
+								_networking.net.protocol.protectChunk(i, j, 1);
+							}
+						}
+					}
+				} else if (!isInside()) {
+					tool.extra.start = null;
+					tool.extra.end = null;
+				}
+			} else if (mouse.buttons === 2 && tool.extra.end && isInside() && sure()) {
+				tool.extra.start = null;
+				tool.extra.end = null;
+				var _ref3 = [s[0], s[1], e[0] - s[0], e[1] - s[1]],
+				    x = _ref3[0],
+				    y = _ref3[1],
+				    w = _ref3[2],
+				    h = _ref3[3];
+
+				for (var i = x; i < x + w; i++) {
+					for (var j = y; j < y + h; j++) {
+						var chunk = _main2.misc.world.getChunkAt(i, j);
+						if (chunk && chunk.locked) {
+							_networking.net.protocol.protectChunk(i, j, 0);
+						}
+					}
+				}
+			}
+		});
+	}));
+
+	//Copy tool
+	OWOP.tool.addToolObject(new OWOP.tool.class("Copy", _tool_renderer.cursors.copy, _local_player2.player.NONE, _conf.RANK.ADMIN, function (tool) {
+		function drawText(ctx, str, x, y, centered) {
+			ctx.strokeStyle = "#000000", ctx.fillStyle = "#FFFFFF", ctx.lineWidth = 2.5, ctx.globalAlpha = 0.5;
+			if (centered) {
+				x -= ctx.measureText(str).width >> 1;
+			}
+			ctx.strokeText(str, x, y);
+			ctx.globalAlpha = 1;
+			ctx.fillText(str, x, y);
+		}
+
+		tool.setFxRenderer(function (fx, ctx, time) {
+			if (!fx.extra.isLocalPlayer) return 1;
+			var x = fx.extra.player.x;
+			var y = fx.extra.player.y;
+			var fxx = (Math.floor(x / 16) - OWOP.camera.x) * OWOP.camera.zoom;
+			var fxy = (Math.floor(y / 16) - OWOP.camera.y) * OWOP.camera.zoom;
+			var oldlinew = ctx.lineWidth;
+			ctx.lineWidth = 1;
+			if (tool.extra.end) {
+				var s = tool.extra.start;
+				var e = tool.extra.end;
+				var x = (s[0] - OWOP.camera.x) * OWOP.camera.zoom + 0.5;
+				var y = (s[1] - OWOP.camera.y) * OWOP.camera.zoom + 0.5;
+				var w = e[0] - s[0];
+				var h = e[1] - s[1];
+				ctx.beginPath();
+				ctx.rect(x, y, w * OWOP.camera.zoom, h * OWOP.camera.zoom);
+				ctx.globalAlpha = 1;
+				ctx.strokeStyle = "#FFFFFF";
+				ctx.stroke();
+				ctx.setLineDash([3, 4]);
+				ctx.strokeStyle = "#000000";
+				ctx.stroke();
+				ctx.globalAlpha = 0.25 + Math.sin(time / 500) / 4;
+				ctx.fillStyle = OWOP.renderer.patterns.unloaded;
+				ctx.fill();
+				ctx.setLineDash([]);
+				var oldfont = ctx.font;
+				ctx.font = "16px sans-serif";
+				var txt = (!tool.extra.clicking ? "Right click to copy " : "") + '(' + Math.abs(w) + 'x' + Math.abs(h) + ')';
+				var txtx = window.innerWidth >> 1;
+				var txty = window.innerHeight >> 1;
+				txtx = Math.max(x, Math.min(txtx, x + w * OWOP.camera.zoom));
+				txty = Math.max(y, Math.min(txty, y + h * OWOP.camera.zoom));
+
+				drawText(ctx, txt, txtx, txty, true);
+				ctx.font = oldfont;
+				ctx.lineWidth = oldlinew;
+				return 0;
+			} else {
+				ctx.beginPath();
+				ctx.moveTo(0, fxy + 0.5);
+				ctx.lineTo(window.innerWidth, fxy + 0.5);
+				ctx.moveTo(fxx + 0.5, 0);
+				ctx.lineTo(fxx + 0.5, window.innerHeight);
+
+				//ctx.lineWidth = 1;
+				ctx.globalAlpha = 1;
+				ctx.strokeStyle = "#FFFFFF";
+				ctx.stroke();
+				ctx.setLineDash([3]);
+				ctx.strokeStyle = "#000000";
+				ctx.stroke();
+
+				ctx.setLineDash([]);
+				ctx.lineWidth = oldlinew;
+				return 1;
+			}
+		});
+
+		tool.extra.start = null;
+		tool.extra.end = null;
+		tool.extra.clicking = false;
+
+		tool.setEvent('mousedown', function (mouse, event) {
+			var s = tool.extra.start;
+			var e = tool.extra.end;
+			var isInside = function isInside() {
+				return mouse.tileX >= s[0] && mouse.tileX < e[0] && mouse.tileY >= s[1] && mouse.tileY < e[1];
+			};
+			if (mouse.buttons === 1 && !tool.extra.end) {
+				tool.extra.start = [mouse.tileX, mouse.tileY];
+				tool.extra.clicking = true;
+				tool.setEvent('mousemove', function (mouse, event) {
+					if (tool.extra.start && mouse.buttons === 1) {
+						tool.extra.end = [mouse.tileX, mouse.tileY];
+						return 1;
+					}
+				});
+				var finish = function finish() {
+					tool.setEvent('mousemove mouseup deselect', null);
+					tool.extra.clicking = false;
+					var s = tool.extra.start;
+					var e = tool.extra.end;
+					if (e) {
+						if (s[0] === e[0] || s[1] === e[1]) {
+							tool.extra.start = null;
+							tool.extra.end = null;
+						}
+						if (s[0] > e[0]) {
+							var tmp = e[0];
+							e[0] = s[0];
+							s[0] = tmp;
+						}
+						if (s[1] > e[1]) {
+							var tmp = e[1];
+							e[1] = s[1];
+							s[1] = tmp;
+						}
+					}
+					OWOP.renderer.render(OWOP.renderer.rendertype.FX);
+				};
+				tool.setEvent('deselect', finish);
+				tool.setEvent('mouseup', function (mouse, event) {
+					if (!(mouse.buttons & 1)) {
+						finish();
+					}
+				});
+			} else if (mouse.buttons === 1 && tool.extra.end) {
+				if (isInside()) {
+					var offx = mouse.tileX;
+					var offy = mouse.tileY;
+					tool.setEvent('mousemove', function (mouse, event) {
+						var dx = mouse.tileX - offx;
+						var dy = mouse.tileY - offy;
+						tool.extra.start = [s[0] + dx, s[1] + dy];
+						tool.extra.end = [e[0] + dx, e[1] + dy];
+					});
+					var end = function end() {
+						tool.setEvent('mouseup deselect mousemove', null);
+					};
+					tool.setEvent('deselect', end);
+					tool.setEvent('mouseup', function (mouse, event) {
+						if (!(mouse.buttons & 1)) {
+							end();
+						}
+					});
+				} else {
+					tool.extra.start = null;
+					tool.extra.end = null;
+				}
+			} else if (mouse.buttons === 2 && tool.extra.end && isInside()) {
+				tool.extra.start = null;
+				tool.extra.end = null;
+				var x = s[0];
+				var y = s[1];
+				var w = e[0] - s[0];
+				var h = e[1] - s[1];
+				var c = document.createElement('canvas');
+				c.width = w;
+				c.height = h;
+				var ctx = c.getContext('2d');
+				var d = ctx.createImageData(w, h);
+				for (var i = y; i < y + h; i++) {
+					for (var j = x; j < x + w; j++) {
+						var pix = OWOP.world.getPixel(j, i);
+						if (!pix) continue;
+						d.data[4 * ((i - y) * w + (j - x))] = pix[0];
+						d.data[4 * ((i - y) * w + (j - x)) + 1] = pix[1];
+						d.data[4 * ((i - y) * w + (j - x)) + 2] = pix[2];
+						d.data[4 * ((i - y) * w + (j - x)) + 3] = 255;
+					}
+				}
+				ctx.putImageData(d, 0, 0);
+				var paste = OWOP.tool.allTools.paste;
+				paste.extra.canvas = c;
+				var oldSelect = paste.events.select;
+				paste.events.select = function () {
+					paste.events.select = oldSelect;
+				};
+				OWOP.player.tool = "paste";
+			}
+		});
+	}));
+
+	addTool(new Tool('Paste', _tool_renderer.cursors.paste, _Fx.PLAYERFX.NONE, _conf.RANK.ADMIN, function (tool) {
+		tool.setFxRenderer(function (fx, ctx, time) {
+			var z = _canvas_renderer2.camera.zoom;
+			var x = fx.extra.player.x;
+			var y = fx.extra.player.y;
+			var fxx = Math.floor(x / 16) - _canvas_renderer2.camera.x;
+			var fxy = Math.floor(y / 16) - _canvas_renderer2.camera.y;
 			if (tool.extra.canvas && fx.extra.isLocalPlayer) {
 				ctx.globalAlpha = 0.5 + Math.sin(time / 500) / 4;
 				ctx.strokeStyle = "#000000";
@@ -3749,11 +4532,11 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 				var imgY = y - tileY;
 				var imgX = x - tileX;
 				if (imgY < 0 || imgX < 0 || imgY >= dat.height || imgX >= dat.width) {
-					var currentPixel = _main.misc.world.getPixel(x, y);
+					var currentPixel = _main2.misc.world.getPixel(x, y);
 					return currentPixel ? currentPixel[2] << 16 | currentPixel[1] << 8 | currentPixel[0] : null;
 				}
 				var img = u32dat[imgY * dat.width + imgX];
-				var oldPixel = _main.misc.world.getPixel(x, y);
+				var oldPixel = _main2.misc.world.getPixel(x, y);
 				var alpha = img >> 24 & 0xFF;
 				if (!oldPixel) {
 					return null;
@@ -3837,7 +4620,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 _global.eventSys.once(_conf.EVENTS.init, function () {
 	exports.toolsWindow = toolsWindow = new _windowsys.GUIWindow('Tools', {}, function (wdow) {
 		wdow.container.id = "toole-container";
-		wdow.container.style.cssText = "max-width: 40px";
+		wdow.container.style.cssText = "max-width: 80px";
 	}).move(5, 32);
 });
 
@@ -4688,6 +5471,8 @@ var cursors = exports.cursors = {
 	fill: { imgpos: [1, 1], hotspot: [3, 29] },
 	brush: { imgpos: [0, 3], hotspot: [0, 26] },
 	select: { imgpos: [2, 0], hotspot: [0, 0] }, // needs better hotspot
+	selectprotect: { imgpos: [4, 0], hotspot: [0, 0] },
+	areaprotect: { imgpos: [4, 0], hotspot: [0, 0] },
 	copy: { imgpos: [3, 0], hotspot: [0, 0] }, // and this
 	paste: { imgpos: [3, 1], hotspot: [0, 0] }, // this too
 	cut: { imgpos: [3, 2], hotspot: [11, 5] },
@@ -4695,6 +5480,8 @@ var cursors = exports.cursors = {
 	shield: { imgpos: [2, 3], hotspot: [18, 18] },
 	kick: { imgpos: [2, 1], hotspot: [3, 6] },
 	ban: { imgpos: [3, 0], hotspot: [10, 4] },
+	areaerase: { imgpos: [4, 1], hotspot: [10, 4] },
+	selecterase: { imgpos: [4, 1], hotspot: [10, 4] },
 	write: { imgpos: [1, 3], hotspot: [10, 4] // fix hotspot
 	} };
 
@@ -5088,8 +5875,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 /***/ }),
 /* 17 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5111,9 +5899,39 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+
+var R = typeof Reflect === 'object' ? Reflect : null
+var ReflectApply = R && typeof R.apply === 'function'
+  ? R.apply
+  : function ReflectApply(target, receiver, args) {
+    return Function.prototype.apply.call(target, receiver, args);
+  }
+
+var ReflectOwnKeys
+if (R && typeof R.ownKeys === 'function') {
+  ReflectOwnKeys = R.ownKeys
+} else if (Object.getOwnPropertySymbols) {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target)
+      .concat(Object.getOwnPropertySymbols(target));
+  };
+} else {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target);
+  };
+}
+
+function ProcessEmitWarning(warning) {
+  if (console && console.warn) console.warn(warning);
+}
+
+var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
+  return value !== value;
+}
+
 function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
+  EventEmitter.init.call(this);
 }
 module.exports = EventEmitter;
 
@@ -5121,276 +5939,392 @@ module.exports = EventEmitter;
 EventEmitter.EventEmitter = EventEmitter;
 
 EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._eventsCount = 0;
 EventEmitter.prototype._maxListeners = undefined;
 
 // By default EventEmitters will print a warning if more than 10 listeners are
 // added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
+var defaultMaxListeners = 10;
+
+Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
+  enumerable: true,
+  get: function() {
+    return defaultMaxListeners;
+  },
+  set: function(arg) {
+    if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
+      throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
+    }
+    defaultMaxListeners = arg;
+  }
+});
+
+EventEmitter.init = function() {
+
+  if (this._events === undefined ||
+      this._events === Object.getPrototypeOf(this)._events) {
+    this._events = Object.create(null);
+    this._eventsCount = 0;
+  }
+
+  this._maxListeners = this._maxListeners || undefined;
+};
 
 // Obviously not all Emitters should be limited to 10. This function allows
 // that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
+EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+  if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
+    throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
+  }
   this._maxListeners = n;
   return this;
 };
 
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
+function $getMaxListeners(that) {
+  if (that._maxListeners === undefined)
+    return EventEmitter.defaultMaxListeners;
+  return that._maxListeners;
+}
 
-  if (!this._events)
-    this._events = {};
+EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+  return $getMaxListeners(this);
+};
 
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      } else {
-        // At least give some kind of context to the user
-        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
-        err.context = er;
-        throw err;
-      }
-    }
-  }
+EventEmitter.prototype.emit = function emit(type) {
+  var args = [];
+  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
+  var doError = (type === 'error');
 
-  handler = this._events[type];
-
-  if (isUndefined(handler))
+  var events = this._events;
+  if (events !== undefined)
+    doError = (doError && events.error === undefined);
+  else if (!doError)
     return false;
 
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
+  // If there is no 'error' event listener then throw.
+  if (doError) {
+    var er;
+    if (args.length > 0)
+      er = args[0];
+    if (er instanceof Error) {
+      // Note: The comments on the `throw` lines are intentional, they show
+      // up in Node's output if this results in an unhandled exception.
+      throw er; // Unhandled 'error' event
     }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
+    // At least give some kind of context to the user
+    var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
+    err.context = er;
+    throw err; // Unhandled 'error' event
+  }
+
+  var handler = events[type];
+
+  if (handler === undefined)
+    return false;
+
+  if (typeof handler === 'function') {
+    ReflectApply(handler, this, args);
+  } else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      ReflectApply(listeners[i], this, args);
   }
 
   return true;
 };
 
-EventEmitter.prototype.addListener = function(type, listener) {
+function _addListener(target, type, listener, prepend) {
   var m;
+  var events;
+  var existing;
 
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
 
-  if (!this._events)
-    this._events = {};
+  events = target._events;
+  if (events === undefined) {
+    events = target._events = Object.create(null);
+    target._eventsCount = 0;
+  } else {
+    // To avoid recursion in the case that type === "newListener"! Before
+    // adding it to the listeners, first emit "newListener".
+    if (events.newListener !== undefined) {
+      target.emit('newListener', type,
+                  listener.listener ? listener.listener : listener);
 
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
+      // Re-assign `events` because a newListener handler could have caused the
+      // this._events to be assigned to a new object
+      events = target._events;
+    }
+    existing = events[type];
+  }
 
-  if (!this._events[type])
+  if (existing === undefined) {
     // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
+    existing = events[type] = listener;
+    ++target._eventsCount;
+  } else {
+    if (typeof existing === 'function') {
+      // Adding the second element, need to change to array.
+      existing = events[type] =
+        prepend ? [listener, existing] : [existing, listener];
+      // If we've already got an array, just append.
+    } else if (prepend) {
+      existing.unshift(listener);
     } else {
-      m = EventEmitter.defaultMaxListeners;
+      existing.push(listener);
     }
 
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
+    // Check for listener leak
+    m = $getMaxListeners(target);
+    if (m > 0 && existing.length > m && !existing.warned) {
+      existing.warned = true;
+      // No error code for this since it is a Warning
+      // eslint-disable-next-line no-restricted-syntax
+      var w = new Error('Possible EventEmitter memory leak detected. ' +
+                          existing.length + ' ' + String(type) + ' listeners ' +
+                          'added. Use emitter.setMaxListeners() to ' +
+                          'increase limit');
+      w.name = 'MaxListenersExceededWarning';
+      w.emitter = target;
+      w.type = type;
+      w.count = existing.length;
+      ProcessEmitWarning(w);
     }
   }
 
-  return this;
+  return target;
+}
+
+EventEmitter.prototype.addListener = function addListener(type, listener) {
+  return _addListener(this, type, listener, false);
 };
 
 EventEmitter.prototype.on = EventEmitter.prototype.addListener;
 
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
+EventEmitter.prototype.prependListener =
+    function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
 
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
+function onceWrapper() {
+  var args = [];
+  for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
+  if (!this.fired) {
+    this.target.removeListener(this.type, this.wrapFn);
+    this.fired = true;
+    ReflectApply(this.listener, this.target, args);
   }
+}
 
-  g.listener = listener;
-  this.on(type, g);
+function _onceWrap(target, type, listener) {
+  var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
+  var wrapped = onceWrapper.bind(state);
+  wrapped.listener = listener;
+  state.wrapFn = wrapped;
+  return wrapped;
+}
 
+EventEmitter.prototype.once = function once(type, listener) {
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+  this.on(type, _onceWrap(this, type, listener));
   return this;
 };
 
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
+EventEmitter.prototype.prependOnceListener =
+    function prependOnceListener(type, listener) {
+      if (typeof listener !== 'function') {
+        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
       }
-    }
-
-    if (position < 0)
+      this.prependListener(type, _onceWrap(this, type, listener));
       return this;
+    };
 
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
+// Emits a 'removeListener' event if and only if the listener was removed.
+EventEmitter.prototype.removeListener =
+    function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
 
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
+      if (typeof listener !== 'function') {
+        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+      }
 
-  return this;
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      list = events[type];
+      if (list === undefined)
+        return this;
+
+      if (list === listener || list.listener === listener) {
+        if (--this._eventsCount === 0)
+          this._events = Object.create(null);
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit('removeListener', type, list.listener || listener);
+        }
+      } else if (typeof list !== 'function') {
+        position = -1;
+
+        for (i = list.length - 1; i >= 0; i--) {
+          if (list[i] === listener || list[i].listener === listener) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+
+        if (position < 0)
+          return this;
+
+        if (position === 0)
+          list.shift();
+        else {
+          spliceOne(list, position);
+        }
+
+        if (list.length === 1)
+          events[type] = list[0];
+
+        if (events.removeListener !== undefined)
+          this.emit('removeListener', type, originalListener || listener);
+      }
+
+      return this;
+    };
+
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+
+EventEmitter.prototype.removeAllListeners =
+    function removeAllListeners(type) {
+      var listeners, events, i;
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      // not listening for removeListener, no need to emit
+      if (events.removeListener === undefined) {
+        if (arguments.length === 0) {
+          this._events = Object.create(null);
+          this._eventsCount = 0;
+        } else if (events[type] !== undefined) {
+          if (--this._eventsCount === 0)
+            this._events = Object.create(null);
+          else
+            delete events[type];
+        }
+        return this;
+      }
+
+      // emit removeListener for all listeners on all events
+      if (arguments.length === 0) {
+        var keys = Object.keys(events);
+        var key;
+        for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === 'removeListener') continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners('removeListener');
+        this._events = Object.create(null);
+        this._eventsCount = 0;
+        return this;
+      }
+
+      listeners = events[type];
+
+      if (typeof listeners === 'function') {
+        this.removeListener(type, listeners);
+      } else if (listeners !== undefined) {
+        // LIFO order
+        for (i = listeners.length - 1; i >= 0; i--) {
+          this.removeListener(type, listeners[i]);
+        }
+      }
+
+      return this;
+    };
+
+function _listeners(target, type, unwrap) {
+  var events = target._events;
+
+  if (events === undefined)
+    return [];
+
+  var evlistener = events[type];
+  if (evlistener === undefined)
+    return [];
+
+  if (typeof evlistener === 'function')
+    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+
+  return unwrap ?
+    unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+}
+
+EventEmitter.prototype.listeners = function listeners(type) {
+  return _listeners(this, type, true);
 };
 
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
+EventEmitter.prototype.rawListeners = function rawListeners(type) {
+  return _listeners(this, type, false);
 };
 
 EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
+  if (typeof emitter.listenerCount === 'function') {
+    return emitter.listenerCount(type);
+  } else {
+    return listenerCount.call(emitter, type);
+  }
 };
 
-function isFunction(arg) {
-  return typeof arg === 'function';
+EventEmitter.prototype.listenerCount = listenerCount;
+function listenerCount(type) {
+  var events = this._events;
+
+  if (events !== undefined) {
+    var evlistener = events[type];
+
+    if (typeof evlistener === 'function') {
+      return 1;
+    } else if (evlistener !== undefined) {
+      return evlistener.length;
+    }
+  }
+
+  return 0;
 }
 
-function isNumber(arg) {
-  return typeof arg === 'number';
+EventEmitter.prototype.eventNames = function eventNames() {
+  return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+};
+
+function arrayClone(arr, n) {
+  var copy = new Array(n);
+  for (var i = 0; i < n; ++i)
+    copy[i] = arr[i];
+  return copy;
 }
 
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
+function spliceOne(list, index) {
+  for (; index + 1 < list.length; index++)
+    list[index] = list[index + 1];
+  list.pop();
 }
 
-function isUndefined(arg) {
-  return arg === void 0;
+function unwrapListeners(arr) {
+  var ret = new Array(arr.length);
+  for (var i = 0; i < ret.length; ++i) {
+    ret[i] = arr[i].listener || arr[i];
+  }
+  return ret;
 }
 
 
@@ -5610,7 +6544,7 @@ var OldProtocol = exports.OldProtocol = {
 	placeBucket: (_placeBucket = {}, _defineProperty(_placeBucket, _conf.RANK.NONE, [0, 1]), _defineProperty(_placeBucket, _conf.RANK.USER, [32, 4]), _defineProperty(_placeBucket, _conf.RANK.MODERATOR, [32, 2]), _defineProperty(_placeBucket, _conf.RANK.ADMIN, [32, 0]), _placeBucket),
 	maxMessageLength: (_maxMessageLength = {}, _defineProperty(_maxMessageLength, _conf.RANK.NONE, 128), _defineProperty(_maxMessageLength, _conf.RANK.USER, 128), _defineProperty(_maxMessageLength, _conf.RANK.MODERATOR, 512), _defineProperty(_maxMessageLength, _conf.RANK.ADMIN, 16384), _maxMessageLength),
 	tools: {
-		id: {}, /* Generated automatically */
+		id: {}, /* Generated automatically nnnnnooooooooooooooooooooo i did this xd */
 		0: 'cursor',
 		1: 'move',
 		2: 'pipette',
@@ -5620,7 +6554,12 @@ var OldProtocol = exports.OldProtocol = {
 		6: 'paste',
 		7: 'export',
 		8: 'line',
-		9: 'protect'
+		9: 'protect',
+		10: 'area protect',
+		11: 'area erase',
+		12: 'text',
+		13: 'brush',
+		14: 'copy'
 	},
 	misc: {
 		worldVerification: 1234,
@@ -6008,11 +6947,15 @@ var OldProtocolImpl = function (_Protocol) {
 	}, {
 		key: 'clearChunk',
 		value: function clearChunk(x, y) {
-			var array = new ArrayBuffer(9);
-			var dv = new DataView(array);
-			dv.setInt32(0, x, true);
-			dv.setInt32(4, y, true);
-			this.ws.send(array);
+			if (_local_player.player.rank == _conf.RANK.ADMIN || _local_player.player.rank == _conf.RANK.MODERATOR && this.placeBucket.canSpend(1)) {
+				var array = new ArrayBuffer(9);
+				var dv = new DataView(array);
+				dv.setInt32(0, x, true);
+				dv.setInt32(4, y, true);
+				this.ws.send(array);
+				return true;
+			}
+			return false;
 		}
 	}]);
 
@@ -6115,7 +7058,7 @@ var _windowsys = __webpack_require__(11);
 
 var _main = __webpack_require__(3);
 
-var SITEKEY = "6LcgvScUAAAAAARUXtwrM8MP0A0N70z4DHNJh-KI";
+var SITEKEY = "6LeD9nwUAAAAAFDsC_l6m_eO_oFwWcdnr_PMLJ_U";
 
 function loadCaptcha(onload) {
 	if (!window.grecaptcha) {
@@ -6197,4 +7140,3 @@ module.exports = __webpack_require__.p + "polyfill/canvas-toBlob.js";
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=app.js.map
