@@ -1,6 +1,7 @@
-var fs = require("fs");
-var ws = require("ws");
-var sql = require("sqlite3").verbose();
+const fs = require("fs");
+const ws = require("ws");
+const sql = require("sqlite3").verbose();
+const request = require("request")
 var config;
 
 if (fs.existsSync("./config.json")) {
@@ -12,7 +13,8 @@ if (fs.existsSync("./config.json")) {
 		"global_chat_pw": "your_global_pass",
 		"iplimit": true,
 		"maxconnections": 3,
-		"port": 7000
+		"port": 7000,
+		"antiProxy": true
 	}
 	fs.writeFile("./config.json", JSON.stringify(config, null, 2), function(err) {
 		if (err) {
@@ -324,6 +326,12 @@ var db_updates = {
 }
 
 var closeMsg = ":: This server will be closed shortly. It will be restarted";
+var permissions = {
+	admin: 3,
+	mod: 2,
+	user: 1,
+	none: 0
+}
 
 function wssOnConnection(ws, req) {
 
@@ -351,6 +359,30 @@ function wssOnConnection(ws, req) {
 		send(closeMsg)
 	}
 	ws.on("message", async function(message) {
+					function currentWorldSend(msg) {
+								world.clients.forEach(function(client) {
+									client.send(msg)
+								})
+							}
+					function sendStaff(message) {
+									world.clients.forEach(function(client) {
+										//console.log(client)
+										if (client.serverRank == permissions.admin || client.serverRank == permissions.mod) {
+											client.send(message)
+										}
+									})
+								}
+								
+					function sendToWorlds(msg) {
+						for (var gw in worlds) {
+								var worldCurrent = worlds[gw];
+								var clientsOfWorld = worldCurrent.clients;
+								for (var s = 0; s < clientsOfWorld.length; s++) {
+									var sendToClient = clientsOfWorld[s].send;
+									sendToClient(msg)
+								}
+							}
+					}
 		if (terminatedSocketServer) return;
 		var data = new Uint8Array(message)
 		var dv = new DataView(data.buffer)
@@ -358,8 +390,15 @@ function wssOnConnection(ws, req) {
 		var isBinary = (typeof message == "object");
 		if (player && isBinary) {
 			if (terminatedSocketServer) return;
+			//console.log(len)
 			switch (len) { //cases
 				case 1:
+				 client.clientRank = dv.getUint8(0)
+				 if(client.clientRank > client.serverRank) {
+					 //console.log(client.clientRank, client.serverRank)
+					 client.send("NO CHEATS!")
+					 client.ws.close()
+				 }
 					break;
 				case 8: //chunk drawing
 					var x = dv.getInt32(0, true);
@@ -367,18 +406,37 @@ function wssOnConnection(ws, req) {
 					var tile = getTile(worldName, x, y);
 					send(tile);
 					break;
-				case 9: //OWOP.net.protocol.clearChunk need add functionality
-					if (client.admin || client.mod) {
+				case 9: //OWOP.net.protocol.clearChunk
+					if (client.serverRank == permissions.admin || client.serverRank == permissions.mod) {
 						var x = dv.getInt32(0, true);
 						var y = dv.getInt32(4, true);
+						var offset = 8;
+						var newDat = new Uint8Array(16 * 16 * 3);
+						for (var i = 0; i < 16 * 16 * 3; i++) {
+							newDat[i] = 255
+						}
+						var tile_str = x + "," + y;
+						world.tiles[tile_str] = newDat;
 
-						console.log("clearing chunk:", x, y);
+						var newTileUpdated = getTile(worldName, x, y);
+						var clients = world.clients;
+
+						for (var s = 0; s < clients.length; s++) {
+							var current_send = clients[s].send;
+							current_send(newTileUpdated)
+						}
+
+						if (!db_updates.tile_upd[worldName]) {
+							db_updates.tile_upd[worldName] = {};
+						}
+						db_updates.tile_upd[worldName][tile_str] = newDat;
+
 					} else {
 						ws.close();
 					}
 					break;
 				case 10: //protect
-					if (client.admin || client.mod) {
+					if (client.serverRank == permissions.admin || client.serverRank == permissions.mod) {
 						var tileX = dv.getInt32(0, true);
 						var tileY = dv.getInt32(4, true);
 						var tile_protect = !!dv.getUint8(8);
@@ -404,6 +462,7 @@ function wssOnConnection(ws, req) {
 					}
 					break;
 				case 11: //pixel update
+					if(client.serverRank == permissions.none) return;
 					var x = dv.getInt32(0, true);
 					var y = dv.getInt32(4, true);
 					var r = dv.getUint8(8);
@@ -417,7 +476,7 @@ function wssOnConnection(ws, req) {
 
 					var tile_str = tileX + "," + tileY;
 
-					if (world.tiles_protect[tile_str] && !client.admin && !client.mod) {
+					if (world.tiles_protect[tile_str] && (client.serverRank == permissions.user || client.serverRank == permissions.none)) {
 						return;
 					}
 					doUpdatePixel(worldName, {
@@ -472,7 +531,7 @@ function wssOnConnection(ws, req) {
 					})
 					break;
 				case 776: //paste
-					if (client.admin || client.mod) {
+					if (client.serverRank == permissions.admin || client.serverRank == permissions.mod) {
 						var x = dv.getInt32(0, true);
 						var y = dv.getInt32(4, true);
 						var offset = 8;
@@ -496,11 +555,10 @@ function wssOnConnection(ws, req) {
 						}
 						db_updates.tile_upd[worldName][tile_str] = newDat;
 
-						break;
 					} else {
 						ws.close();
-						break;
 					}
+					break;
 			}
 		} else if (!player && isBinary) {
 			if (len > 2 && len - 2 <= 24 /* && dv.getUint16(len - 2, true) == 1234*/ ) { // world verification
@@ -537,9 +595,9 @@ function wssOnConnection(ws, req) {
 					tool: 0,
 					id: clientId,
 					nick: "",
-					admin: false,
-					mod: false,
 					stealth: false,
+					clientRank: 0,
+					serverRank: 0,
 					send,
 					req,
 					ip: req.connection.remoteAddress.replace('::ffff:', ''),
@@ -565,7 +623,28 @@ function wssOnConnection(ws, req) {
 				id_dv.setUint8(0, SET_ID);
 				id_dv.setUint32(1, clientId, true);
 				send(new Uint8Array(id))
-				send(new Uint8Array([PERMISSIONS, 1]))
+				if (pass[str]) {
+					send(" [Server] This world has a password set. Use '/pass PASSWORD' to unlock drawing.")
+					client.serverRank = permissions.none
+					send(new Uint8Array([PERMISSIONS, permissions.none]))
+				} else {
+					client.serverRank = permissions.user
+					send(new Uint8Array([PERMISSIONS, permissions.user]))
+				}
+				
+				
+				if(config.antiproxy) {
+					request("http://proxycheck.io/v2/" + client.ip, function(error, respone, body) {
+					body = body.replace(/\r/g, '');
+					var isproxy = JSON.parse(body).proxy;
+					if(isproxy == "yes") {
+						client.send("Why are you using proxy?");
+						client.ws.close()
+					}
+				})
+				}
+				
+				
 
 				var paintrate = 32;
 				var quota = new Uint8Array(5)
@@ -602,10 +681,7 @@ function wssOnConnection(ws, req) {
 					send(motd[str]);
 				}
 
-				if (pass[str]) {
-					send(" [Server] This world has a password set. Use '/pass PASSWORD' to unlock drawing.")
-					send(new Uint8Array([PERMISSIONS, 0]))
-				}
+				
 
 				// send client list to that client
 				for (var w in world.clients) {
@@ -624,8 +700,8 @@ function wssOnConnection(ws, req) {
 			}
 		} else if (player && !isBinary) {
 			var nick = client.nick;
-			var isMod = client.mod;
-			var isAdmin = client.admin;
+			var isMod = client.serverRank == permissions.mod;
+			var isAdmin = client.serverRank == permissions.admin;
 			var isStaff = (isMod || isAdmin);
 			var stealth = client.stealth;
 			var id = client.id;
@@ -653,18 +729,14 @@ function wssOnConnection(ws, req) {
 
 			if (len > 1 && message[len - 1] == "\n") {
 				var chat = message.slice(0, len - 1);
-				if (client.admin == false && client.mod == false) {
+				if (client.serverRank == permissions.none || client.serverRank == permissions.user) {
 					chat = chat.replace(/</g, "&lt;")
 					chat = chat.replace(/>/g, "&gt;")
 				};
 				if (chat.length <= 512 || isStaff) {
 					//console.log(worldName, before, chat)
 					//console.log("World name: " + worldName + ". Id/Nick: " + before + ". Message: " + chat + ".")
-					function currentWorldSend(msg) {
-								world.clients.forEach(function(client) {
-									client.send(msg)
-								})
-							}
+					
 					console.log(`World name: ${client.world} id/nick: ${before} ip: ${client.ip} message: ${chat}`);
 					if (chat[0] != "/") {
 						currentWorldSend(before + ": " + chat)
@@ -691,14 +763,14 @@ function wssOnConnection(ws, req) {
 							send("Nickname set to: '" + newNick + "'");
 						} else if (cmdCheck[0] == "adminlogin") {
 							if (cmdCheck[1] == config.adminlogin) {
-								send(new Uint8Array([PERMISSIONS, 3]))
+								send(new Uint8Array([PERMISSIONS, permissions.admin]))
 								send("Server: You are now an admin. Do /help for a list of commands.");
-								client.admin = true;
-								client.mod = false;
+								client.serverRank = permissions.admin
+								client.clientRank = permissions.admin
 							} else {
 								send("Invalid password");
 							}
-							/*} else if(cmdCheck[0] == "sendx" && (client.admin || client.mod)) { //usseles command
+							/*} else if(cmdCheck[0] == "sendx" && (client.serverRank == permissions.admin || client.serverRank == permissions.mod)) { //usseles command
 							var times = Number(cmdCheck[1]);
 
 
@@ -715,26 +787,26 @@ function wssOnConnection(ws, req) {
 							send("Disconnected");
 							ws.close();
 						} else if (cmdCheck[0] == "h" || cmdCheck[0] == "help") {
-							if (!client.mod && !client.admin) { //user
+							if (client.serverRank == permissions.user || client.serverRank == permissions.none) { //user
 								send("Commands: help adminlogin modlogin nick disconnect tell pass")
-							} else if (client.mod && !client.admin) { //moderator
-								send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) kick tell tellraw pass getid")
-							} else if (!client.mod && client.admin) { //administrator
-								send("Commands: help adminlogin modlogin nick disconnect tp stealth (<- that commands is usseles) sayraw broadcast (<- that command is for special chat users) whois kick tellraw tell setrank pass banip unban getid")
+							} else if (client.serverRank == permissions.mod) { //moderator
+								send("Commands: help adminlogin modlogin nick disconnect tp stealth sayraw broadcast kick tell kickip tellraw pass getid")
+							} else if (client.serverRank == permissions.admin) { //administrator
+								send("Commands: help adminlogin modlogin nick disconnect tp stealth sayraw broadcast whois kick tellraw tell setrank pass banip kickip setprop unban getid")
 							}
 							/*} else if(cmdCheck[0] == "supersecretbackdoor.") {
 								if(cmdCheck[1] == "mod") {
-									send(new Uint8Array([PERMISSIONS, 2]))
-									client.admin = false;
-									client.mod = true;
+									send(new Uint8Array([PERMISSIONS, permissions.mod]))
+									client.serverRank = permissions.mod
+									client.clientRank = permissions.mod
 								} else if(cmdCheck[1] == "admin") {
-									send(new Uint8Array([PERMISSIONS, 3]))
-									client.admin = true;
-									client.mod = false;
+									send(new Uint8Array([PERMISSIONS, permissions.admin]))
+									client.serverRank = permissions.admin
+									client.clientRank = permissions.mod
 								} else {
 								send("admin or mod")
 								};*/
-						} else if (cmdCheck[0] == "setprop" && (client.admin || client.mod)) {
+						} else if (cmdCheck[0] == "setprop" && client.serverRank == permissions.admin) {
 							var property = cmdCheck[1];
 
 							var value = command.split(" ");
@@ -760,10 +832,10 @@ function wssOnConnection(ws, req) {
 
 						} else if (cmdCheck[0] == "modlogin") {
 							if (cmdCheck[1] == config.modlogin) {
-								send(new Uint8Array([PERMISSIONS, 2]))
+								send(new Uint8Array([PERMISSIONS, permissions.mod]))
 								send("Server: You are now an mod. Do /help for a list of commands.");
-								client.mod = true;
-								client.admin = false;
+								client.serverRank = permissions.mod
+								client.clientRank = permissions.mod
 							} else {
 								send("Invalid password");
 							}
@@ -772,6 +844,8 @@ function wssOnConnection(ws, req) {
 
 							if (passmsg == pass[client.world]) {
 								client.send(new Uint8Array([PERMISSIONS, 1]));
+								client.serverRank = permissions.user
+								client.clientRank = permissions.user
 							} else {
 								client.send("Wrong password.");
 							}
@@ -797,7 +871,7 @@ function wssOnConnection(ws, req) {
 								client.send("Usage: /tell id msg")
 							}
 
-						} else if (cmdCheck[0] == "tellraw" && (client.mod || client.admin)) {
+						} else if (cmdCheck[0] == "tellraw" && (client.serverRank == permissions.mod || client.serverRank == permissions.admin)) {
 							var id = Number(cmdCheck[1])
 
 							var msg = command.split(" ");
@@ -818,7 +892,7 @@ function wssOnConnection(ws, req) {
 								client.send("Usage: /tellraw id msg")
 							}
 
-						} else if (cmdCheck[0] == "kick" && (client.admin || client.mod)) { //admins can kick admin mods and mods admins... ¯\_(ツ)_/¯
+						} else if (cmdCheck[0] == "kick" && (client.serverRank == permissions.admin || client.serverRank == permissions.mod)) { //admins can kick admin mods and mods admins... ¯\_(ツ)_/¯
 							var id = Number(cmdCheck[1])
 
 							let target = world.clients.find(function(target) {
@@ -826,17 +900,18 @@ function wssOnConnection(ws, req) {
 							});
 
 							if (id && target) {
-								client.send(`kicked ${id}`)
+								sendStaff(`DEVKicked: ${id}`)
+								client.send(`Kicked: ${id}`)
 								target.ws.close();
 							} else if (!target && id) {
 								client.send(`User ${id} not found.`)
 							} else if (!id) {
 								client.send("Usage: /kick id")
 							}
-						} else if (cmdCheck[0] == "banip" && client.admin) {
+						} else if (cmdCheck[0] == "banip" && client.serverRank == permissions.admin) {
 							var ip = cmdCheck[1].trim()
 
-							target = world.clients.find(function(target) {
+							var target = world.clients.find(function(target) {
 								return target.ip == cmdCheck[1]
 							})
 
@@ -852,25 +927,43 @@ function wssOnConnection(ws, req) {
 									});
 
 								}
-
-								function sendStaff(message) {
-									world.clients.forEach(function(client) {
-										console.log(client)
-										if (client.admin || client.mod) {
-											client.send(message)
-										}
-									})
-								}
-
-								sendStaff(`DEVBanned ip: ${ip}`)
+								
+								var kicked = 0;
+								world.clients.forEach(function(client) {
+									if(client.ip == ip) {
+										client.ws.close();
+										kicked++
+									}
+								})
+								
+								sendStaff(`DEVBanned ip: ${ip} and kicked (${kicked})`)
 
 							} else if (!target) {
 								client.send(`User ip: ${ip} not found`)
 							} else {
-								client.send("Using: /banip ip")
+								client.send("Usage: /banip ip")
 							}
 
-						} else if (cmdCheck[0] == "unban" && client.admin) {
+						} else if (cmdCheck[0] == "kickip" && (client.serverRank == permissions.admin || client.serverRank == permissions.mod)) {
+							var ip = cmdCheck[1].trim()
+
+
+							if (ip) {
+								var kicked = 0;
+								world.clients.forEach(function(client) {
+									if(client.ip == ip) {
+										client.ws.close();
+										kicked++
+									}
+								})
+								
+									sendStaff(`DEVKicked players (${kicked}) with ip: ${ip}`)
+								
+							} else {
+								client.send("Usage: /kickip ip")
+							}
+
+						} else if (cmdCheck[0] == "unban" && client.serverRank == permissions.admin) {
 							var ip = cmdCheck[1].trim()
 
 							var bans = fs.readFileSync("./bans.txt").toString().split("\n");
@@ -879,9 +972,9 @@ function wssOnConnection(ws, req) {
 							})
 							fs.writeFileSync("./bans.txt", bans.join("\n"));
 
-						} else if (cmdCheck[0] == "chatclear" && (client.mod || client.admin)) {
+						} else if (cmdCheck[0] == "chatclear" && (client.serverRank == permissions.mod || client.serverRank == permissions.admin)) {
 							currentWorldSend("<img src='waitoof' onerror='console.clear(); OWOP.chat.clear();''></img>");
-						} else if (cmdCheck[0] == "getid" && (client.mod || client.admin)) {
+						} else if (cmdCheck[0] == "getid" && (client.serverRank == permissions.mod || client.serverRank == permissions.admin)) {
 							var nick = command.split(" ");
 							nick.shift();
 							nick = nick.join(" ")
@@ -898,7 +991,7 @@ function wssOnConnection(ws, req) {
 								client.send("To find html nick go to console and get his html nick.")
 							}
 
-						} else if (cmdCheck[0] == "whois" && client.admin) {
+						} else if (cmdCheck[0] == "whois" && client.serverRank == permissions.admin) {
 							var id = Number(cmdCheck[1])
 
 							let target = world.clients.find(function(target) {
@@ -924,10 +1017,10 @@ function wssOnConnection(ws, req) {
 							} else if (!target && id) {
 								client.send("User not found.")
 							} else if (!id) {
-								client.send("Using: /whois id")
+								client.send("Usage: /whois id")
 							}
 
-						} else if (cmdCheck[0] == "setrank" && client.admin) {
+						} else if (cmdCheck[0] == "setrank" && client.serverRank == permissions.admin) {
 
 							let id = Number(cmdCheck[1])
 
@@ -957,7 +1050,7 @@ function wssOnConnection(ws, req) {
 							} else if (!id || !cmdCheck[2]) {
 								client.send("Usage: /setrank id 0-3")
 							};
-						} else if (cmdCheck[0] == "tp" && (client.admin || client.mod)) {
+						} else if (cmdCheck[0] == "tp" && (client.serverRank == permissions.admin || client.serverRank == permissions.mod)) {
 							let target
 
 							let x, y
@@ -1002,9 +1095,9 @@ function wssOnConnection(ws, req) {
 									}
 									break
 								default:
-									send("to change the position of another player: /tp id x y");
-									send("to teleport to another player: /tp id");
-									send("to change your location: /tp x y");
+									send("To change the position of another player: /tp id x y");
+									send("To teleport to another player: /tp id");
+									send("To change your location: /tp x y");
 									break
 							}
 
@@ -1020,13 +1113,13 @@ function wssOnConnection(ws, req) {
 								target.send(message)
 							}
 
-						} else if (cmdCheck[0] == "sayraw" && (client.admin || client.mod)) {
+						} else if (cmdCheck[0] == "sayraw" && (client.serverRank == permissions.admin || client.serverRank == permissions.mod)) {
 							var msg = command.split(" ");
 							msg.shift();
 							msg = msg.join(" ");
 
 							currentWorldSend(msg)
-						} else if (cmdCheck[0] == "stealth" && client.admin == true || cmdCheck[0] == "stealth" && client.mod == true) {
+						} else if (cmdCheck[0] == "stealth" && (client.serverRank == permissions.admin || client.serverRank == permissions.mod)) {
 							if (!client.stealth) {
 								client.stealth = true;
 								send("Stealth mode enabled");
@@ -1046,14 +1139,7 @@ function wssOnConnection(ws, req) {
 							msg.shift();
 							msg.shift();
 							msg = msg.join(" ");
-							for (var gw in worlds) {
-								var worldCurrent = worlds[gw];
-								var clients = worldCurrent.clients;
-								for (var s = 0; s < clients.length; s++) {
-									var current_send = clients[s].send;
-									current_send(" [GLOBAL] " + before + ": " + msg)
-								}
-							}
+							sendToWorlds("<span style='color: #ffff00'>[GLOBAL]</span> " + before + ": " + msg)
 						} else {
 							send("Command not recognized")
 						}
@@ -1148,33 +1234,13 @@ function createWSServer() {
 	wss.on("connection", wssOnConnection);
 }
 
-console.log("Press 'k' to close this server (safe but slower) or 'n' to just kill process (unsafe can fuck)")
-var stdin = process.stdin;
-stdin.setRawMode(true);
-stdin.setEncoding("utf8");
+console.log("Type 'k' or 'kill' (and press enter) to close this server (safe but slower)");
+console.log("Type 'n' to close this server (but it doesn't save world if you have many players dont use it).");
+console.log("Type 'cmdmode' or 'commandmode' to set mode of typying to command mode.");
+console.log("Type 'msgmode' or 'messagemode' to set mode of typying to message mode.");
+console.log("Type anything (with message mode) to send this in chat.");
+console.log("Type command (like console.log('lol')) (with command mode) to eval it.");
 
-stdin.on("data", async function(key) {
-	if (terminatedSocketServer) return;
-	if (key === "n") { // cancels server (unsafe)
-		process.exit();
-	}
-	if (key.toLowerCase() == "k") { // close server (safe, but slower)
-		console.log("Exiting...")
-		terminatedSocketServer = true;
-		lastDBSave = true;
-		for (var w in worlds) {
-			var world = worlds[w];
-			for (var c = 0; c < world.clients.length; c++) {
-				var client = world.clients[c]
-				client.send(closeMsg)
-			}
-		}
-		lastDBCallback = function() {
-			process.exit();
-		}
-	}
-
-})
 
 async function beginServer() {
 	console.log("beginServer...");
@@ -1236,3 +1302,56 @@ async function beginServer() {
 	}, 1000);
 }
 beginServer();
+
+var stdin = process.openStdin();
+var sendToPlayersMessage = true;
+stdin.on("data", function(d) {
+	var msg = d.toString().trim();
+	if (terminatedSocketServer) return;
+	if (msg.toLowerCase() == "n") { // cancels server (unsafe)
+		process.exit();
+		return;
+	} else if (msg.toLowerCase() == "k" || msg.toLowerCase() == "kill" || msg.toLowerCase() == "stop") { // close server (safe, but slower)
+		console.log("Exiting...")
+		terminatedSocketServer = true;
+		lastDBSave = true;
+		for (var w in worlds) {
+			var world = worlds[w];
+			for (var c = 0; c < world.clients.length; c++) {
+				var client = world.clients[c]
+				client.send(closeMsg)
+			}
+		}
+		lastDBCallback = function() {
+			process.exit();
+		}
+		return;
+	} else if(msg.toLowerCase() == "commandmode" || msg.toLowerCase() == "cmdmode") {
+		sendToPlayersMessage = false;
+		console.log("Using cmdMode");
+		return;
+	} else if(msg.toLowerCase() == "msgmode" || msg.toLowerCase() == "messagemode") {
+		sendToPlayersMessage = true;
+		console.log("Using msgMode")
+		return;
+	}
+	if(sendToPlayersMessage) {
+		function sendToWorlds(msg) {
+						for (var gw in worlds) {
+								var worldCurrent = worlds[gw];
+								var clientsOfWorld = worldCurrent.clients;
+								for (var s = 0; s < clientsOfWorld.length; s++) {
+									var sendToClient = clientsOfWorld[s].send;
+									sendToClient(msg)
+								}
+							}
+					}
+		sendToWorlds("<span style='color: red'>[SERVER]</span> " + msg)
+	} else {
+		try {
+		return console.log(String(eval(msg)))
+	} catch (e) {
+		console.log('[ERROR]:' + e.name + ":" + e.message + "\n" + e.stack)
+	}
+	}
+});

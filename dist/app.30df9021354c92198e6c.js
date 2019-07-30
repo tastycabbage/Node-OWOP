@@ -654,11 +654,11 @@ var playerList = exports.playerList = {};
 var playerListTable = exports.playerListTable = document.createElement("table");
 var playerListWindow = exports.playerListWindow = new _windowsys.GUIWindow('Players', { closeable: true }, function (wdow) {
 	var tableHeader = document.createElement("tr");
-	tableHeader.innerHTML = "<th>Id</th><th>X</th><th>Y</th>";
+	tableHeader.innerHTML = "<th>Id</th><th>X</th><th>Y</th><th>R</th><th>G</th><th>B</th><th>Color</th><th>Tool</th>";
 	playerListTable.appendChild(tableHeader);
 	wdow.container.appendChild(playerListTable);
 	wdow.container.id = "player-list";
-}).move(window.innerWidth - 240, 32);
+}).move(window.innerWidth - 340, 32);
 
 function getNewWorldApi() {
 	var obj = {};
@@ -861,7 +861,7 @@ function updateXYDisplay(x, y) {
 }
 
 function updatePlayerCount(count) {
-	elements.playerCountDisplay.innerHTML = count + ' cursor' + (count !== 1 ? 's online' : ' online');
+	elements.playerCountDisplay.innerHTML = count + ' player' + (count !== 1 ? 's online' : ' online');
 }
 /*
 function openServerSelector() {
@@ -1382,7 +1382,7 @@ function init() {
 
 	updateXYDisplay(0, 0);
 
-	var worldName = decodeURIComponent(window.location.hash.slice(1));
+	var worldName = decodeURIComponent(window.location.pathname.slice(1));
 	if (worldName[0] === '/') {
 		worldName = worldName.slice(1);
 	}
@@ -2441,7 +2441,7 @@ var toolSelected = null;
 	[0xF4, 0xF4, 0xF4], [0x93, 0xB6, 0xC1], [0x55, 0x71, 0x85], [0x32, 0x40, 0x56]
 ];*/
 // ENDESGA 16 palette
-var palette = [[0xFF, 0xFF, 0xFF], [0xE4, 0xA6, 0x72], [0xB8, 0x6F, 0x50], [0x74, 0x3F, 0x39], [0x3F, 0x28, 0x32], [0x9E, 0x28, 0x35], [0xE5, 0x3B, 0x44], [0xFB, 0x92, 0x2B], [0xFF, 0xE7, 0x62], [0x63, 0xC6, 0x4D], [0x32, 0x73, 0x45], [0x19, 0x3D, 0x3F], [0x4F, 0x67, 0x81], [0xAF, 0xBF, 0xD2], [0xFF, 0xFF, 0xFF], [0x2C, 0xE8, 0xF4], [0x04, 0x84, 0xD1]];
+var palette = [[0x00, 0x00, 0x00], [0xE4, 0xA6, 0x72], [0xB8, 0x6F, 0x50], [0x74, 0x3F, 0x39], [0x3F, 0x28, 0x32], [0x9E, 0x28, 0x35], [0xE5, 0x3B, 0x44], [0xFB, 0x92, 0x2B], [0xFF, 0xE7, 0x62], [0x63, 0xC6, 0x4D], [0x32, 0x73, 0x45], [0x19, 0x3D, 0x3F], [0x4F, 0x67, 0x81], [0xAF, 0xBF, 0xD2], [0xFF, 0xFF, 0xFF], [0x2C, 0xE8, 0xF4], [0x04, 0x84, 0xD1]];
 var paletteIndex = 0;
 
 var undoHistory = exports.undoHistory = [];
@@ -3231,7 +3231,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 				case 4:
 					if (event.ctrlKey) {
 						usedButtons |= 4;
-						var color = _OWOP.world.getPixel(mouse.tileX, mouse.tileY);
+						var color = OWOP.world.getPixel(mouse.tileX, mouse.tileY);
 						if (color) {
 							OWOP.player.selectedColor = color;
 						}
@@ -3244,29 +3244,31 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 			lastX = null;
 			lastY = null;
 		});
-		if (OWOP.player.rank == 3) {
-			var brDiamWin = OWOP.windowSys.addWindow(new OWOP.windowSys.class.window('Brush diameter', {}, function (win) {
-				win.container.title = 'Sets brush diameter. (duh)';
-				win.container.style.height = '16px';
-				win.container.style.overflow = 'hidden';
+		OWOP.on(_conf.EVENTS.net.sec.rank, function (rank) {
+			if (rank == 3) {
+				var brDiamWin = OWOP.windowSys.addWindow(new OWOP.windowSys.class.window('Brush diameter', {}, function (win) {
+					win.container.title = 'Sets brush diameter. (duh)';
+					win.container.style.height = '16px';
+					win.container.style.overflow = 'hidden';
 
-				var brDiamElm = OWOP.util.mkHTML('span', { innerHTML: brDiameter });
-				win.addObj(brDiamElm);
-				var Rbar = OWOP.util.mkHTML('input', {
-					type: 'range', style: '-moz-appearance:none;-webkit-appearance:none;appearance:none;height:6px;outline:none;float:right;',
-					min: 2, max: 16,
-					value: brDiameter,
-					oninput: function oninput() {
-						brDiameter = this.value;
-						brDiamElm.innerHTML = this.value;
-					}, ondblclick: function ondblclick() {
-						this.value = 3;
-						this.onchange();
-					}
-				});
-				win.addObj(Rbar);
-			}).move(945, 32));
-		}
+					var brDiamElm = OWOP.util.mkHTML('span', { innerHTML: brDiameter });
+					win.addObj(brDiamElm);
+					var Rbar = OWOP.util.mkHTML('input', {
+						type: 'range', style: '-moz-appearance:none;-webkit-appearance:none;appearance:none;height:6px;outline:none;float:right;',
+						min: 2, max: 16,
+						value: brDiameter,
+						oninput: function oninput() {
+							brDiameter = this.value;
+							brDiamElm.innerHTML = this.value;
+						}, ondblclick: function ondblclick() {
+							this.value = 3;
+							this.onchange();
+						}
+					});
+					win.addObj(Rbar);
+				}).move(945, 32));
+			}
+		});
 	}));
 
 	//Text Tool
@@ -3450,6 +3452,25 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 
 	//Area Erase
 	addTool(new Tool('Area Erase', _tool_renderer.cursors.areaerase, _Fx.PLAYERFX.RECT_SELECT_ALIGNED(16), _conf.RANK.MODERATOR, function (tool) {
+		function fillChunk(chunkX, chunkY, c) {
+			var color = c[2] << 16 | c[1] << 8 | c[0];
+			var chunk = _main2.misc.world.getChunkAt(chunkX, chunkY);
+			if (chunk) {
+				var empty = true;
+				firstLoop: for (var y = 0; y < _conf.protocol.chunkSize; y++) {
+					for (var x = 0; x < _conf.protocol.chunkSize; x++) {
+						if ((chunk.get(x, y) & 0xFFFFFF) != color) {
+							empty = false;
+							break firstLoop;
+						}
+					}
+				}
+				if (!empty) {
+					chunk.set(color);
+					_networking.net.protocol.setChunk(chunkX, chunkY, new Array(256).fill(color));
+				}
+			}
+		}
 		function drawText(ctx, str, x, y, centered) {
 			ctx.strokeStyle = "#000000", ctx.fillStyle = "#FFFFFF", ctx.lineWidth = 2.5, ctx.globalAlpha = 0.5;
 			if (centered) {
@@ -3620,9 +3641,9 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 					for (var i = x; i < x + w; i++) {
 						for (var j = y; j < y + h; j++) {
 							if (mouse.buttons & 1) {
-								OWOP.net.protocol.clearChunk(i, j, OWOP.player.selectedColor);
+								fillChunk(i, j, OWOP.player.selectedColor);
 							} else {
-								OWOP.net.protocol.clearChunk(i, j, [255, 255, 255]);
+								fillChunk(i, j, [255, 255, 255]);
 							}
 						}
 					}
@@ -6367,7 +6388,7 @@ var _tools = __webpack_require__(10);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Player = exports.Player = function () {
-    function Player(x, y, rgb, tool, id) {
+    function Player(x, y, rgb, tool, id, rank) {
         _classCallCheck(this, Player);
 
         this.id = id.toString(); /* Prevents calling .toString every frame */
@@ -6377,6 +6398,7 @@ var Player = exports.Player = function () {
         this.tool = _tools.tools[tool] || _tools.tools['cursor'];
         this.fx = new _Fx.Fx(tool ? tool.fxType : _Fx.PLAYERFX.NONE, { player: this });
         this.fx.setVisible(_main.misc.world.validMousePos(Math.floor(this.endX / 16), Math.floor(this.endY / 16)));
+        this.rank = rank;
 
         this.rgb = rgb;
         this.htmlRgb = _color.colorUtils.toHTML(_color.colorUtils.u24_888(rgb[0], rgb[1], rgb[2]));
@@ -6385,19 +6407,20 @@ var Player = exports.Player = function () {
         this.clr = _color.colorUtils.toHTML(this.clr);
 
         var playerListEntry = document.createElement("tr");
-        playerListEntry.innerHTML = "<td>" + this.id + "</td><td>" + Math.floor(x / 16) + "</td><td>" + Math.floor(y / 16) + "</td>";
+        playerListEntry.innerHTML = "<td>" + this.id + "</td><td>" + Math.floor(x / 16) + "</td><td>" + Math.floor(y / 16) + "</td><td>" + rgb[0] + "</td><td>" + rgb[1] + "</td><td>" + rgb[2] + ('</td><td><div style="width: 10px; height: 10px; background: rgb(' + rgb[0] + ', ' + rgb[1] + ',' + rgb[2] + ')"></div></td>') + "<td>" + tool + "</td>";
         _main.playerList[this.id] = playerListEntry;
         _main.playerListTable.appendChild(playerListEntry);
     }
 
     _createClass(Player, [{
         key: 'update',
-        value: function update(x, y, rgb, tool) {
+        value: function update(x, y, rgb, tool, rank) {
             this._x.val = x;
             this._y.val = y;
             /* TODO: fix weird bug (caused by connecting before tools initialized?) */
             //console.log(tool)
             this.tool = _tools.tools[tool] || _tools.tools['cursor'];
+            this.rank = rank;
             this.fx.setRenderer((this.tool || {}).fxRenderer); // temp until fix: || {}
             this.fx.setVisible(_main.misc.world.validMousePos(Math.floor(this.endX / 16), Math.floor(this.endY / 16)));
             this.rgb = rgb;
@@ -6405,6 +6428,11 @@ var Player = exports.Player = function () {
 
             _main.playerList[this.id].childNodes[1].innerHTML = Math.floor(x / 16);
             _main.playerList[this.id].childNodes[2].innerHTML = Math.floor(y / 16);
+            _main.playerList[this.id].childNodes[3].innerHTML = rgb[0];
+            _main.playerList[this.id].childNodes[4].innerHTML = rgb[1];
+            _main.playerList[this.id].childNodes[5].innerHTML = rgb[2];
+            _main.playerList[this.id].childNodes[6].innerHTML = '<div style="width: 10px; height: 10px; background: rgb(' + rgb[0] + ', ' + rgb[1] + ',' + rgb[2] + ')"></div>';
+            _main.playerList[this.id].childNodes[7].innerHTML = tool;
         }
     }, {
         key: 'disconnect',
