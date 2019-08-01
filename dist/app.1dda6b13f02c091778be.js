@@ -863,59 +863,107 @@ function updateXYDisplay(x, y) {
 function updatePlayerCount(count) {
 	elements.playerCountDisplay.innerHTML = count + ' player' + (count !== 1 ? 's online' : ' online');
 }
-/*
-function openServerSelector() {
-	windowsys.addWindow(new GUIWindow(0, 0, 250, 60, "Select a server", {
-			centered: true
-		}, wdow => {
 
-		wdow.addObj(mkHTML("button", {
-			innerHTML: "Original server",
-			style: "width: 100%; height: 50%",
-			onclick: () => {
-				w.options.serverAddress = "ws://ourworldofpixels.com:443";
-				w.net.connect();
-				win.wm.delWindow(win);
-				w.options.oldserver = true;
+function openServerSelector() {
+	OWOP.windowSys.addWindow(new OWOP.windowSys.class.window("Server selector", {
+		centered: true,
+		closable: true, //for the moment
+		movable: true
+	}, function (wdow) {
+		var buttonStyle = "background-color: rgba(255,255,255,0.7)";
+		wdow.frame.style.width = "13%";
+		wdow.frame.style.height = "25%";
+		wdow.frame.style.border = "3px solid currentColor";
+		wdow.frame.style.backgroundColor = "rgba(255,255,255,0.7)";
+		wdow.frame.style.padding = "5px";
+		wdow.frame.querySelector("span").style.color = wdow.container.color = "currentColor";
+		wdow.container.style.border = wdow.container.style.backgroundColor = wdow.container.style.margin = wdow.frame.querySelector("span").style.textShadow = "unset";
+
+		function makeHTML(tag, opts) {
+			var elm = document.createElement(tag);
+			for (var i in opts) {
+				elm[i] = opts[i];
+			}
+			return elm;
+		}
+		wdow.addObj(makeHTML("textarea", {
+			placeholder: "world name",
+			id: "worldname"
+		}));
+
+		wdow.addObj(makeHTML("br", {}));
+
+		wdow.addObj(makeHTML("button", {
+			innerHTML: "mathias377's server",
+			style: buttonStyle,
+			onclick: function onclick() {
+				if (OWOP.net.protocol != undefined) if (OWOP.net.protocol.ws.readyState != 3) OWOP.net.protocol.ws.close();
+				setTimeout(function () {
+					OWOP.options.serverAddress[0].url = "ws://89.108.64.145:5676";
+					var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : "main";
+					OWOP.net.connect(OWOP.options.serverAddress[0], worldname);
+					wdow.close();
+				}, 500);
 			}
 		}));
-		wdow.addObj(mkHTML("button", {
-			innerHTML: "Beta server",
-			style: "width: 100%; height: 50%",
-			onclick: () => {
-				w.options.serverAddress = "ws://vanillaplay.ddns.net:25565";
-				w.net.connect();
-				win.wm.delWindow(win);
+
+		wdow.addObj(makeHTML("br", {}));
+
+		wdow.addObj(makeHTML("button", {
+			innerHTML: "localhost:7000",
+			style: buttonStyle,
+			onclick: function onclick() {
+				if (OWOP.net.protocol != undefined) if (OWOP.net.protocol.ws.readyState != 3) OWOP.net.protocol.ws.close();
+				setTimeout(function () {
+					OWOP.options.serverAddress[0].url = "ws://localhost:7000";
+					var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : "main";
+					OWOP.net.connect(OWOP.options.serverAddress[0], worldname);
+					wdow.close();
+				}, 500);
 			}
 		}));
-		wdow.addObj(mkHTML("button", {
-			innerHTML: "Localhost",
-			style: "width: 100%; height: 50%",
-			onclick: () => {
-				w.options.serverAddress = "ws://localhost:25565";
-				w.net.connect();
-				win.wm.delWindow(win);
-			}
+
+		wdow.addObj(makeHTML("br", {}));
+
+		wdow.addObj(makeHTML("textarea", {
+			placeholder: "Enter server address with ws/wss",
+			id: "serveraddress"
 		}));
-		wdow.addObj(mkHTML("button", {
-			innerHTML: "Custom server",
-			style: "width: 100%; height: 50%",
-			onclick: function() {
-				var i = win.wm.addWindow(
-					new UtilInput("Enter server address", "Type here...", "text", function(addr) {
-						w.options.serverAddress = addr;
-						w.net.connect();
-						win.close();
-					}.bind({w: w, win: win}))
-				);
-				win.onclose = function() {
-					i.getWindow().close();
+
+		wdow.addObj(makeHTML("br", {}));
+
+		wdow.addObj(makeHTML("button", {
+			innerHTML: "custom server",
+			style: buttonStyle,
+			onclick: function onclick() {
+				var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : "main";
+				var serveraddres = document.getElementById("serveraddress").value;
+				if (serveraddres.includes("ws")) {
+					if (OWOP.net.protocol != undefined) if (OWOP.net.protocol.ws.readyState != 3) OWOP.net.protocol.ws.close();
+					setTimeout(function () {
+						OWOP.options.serverAddress[0].url = serveraddres;
+						OWOP.net.connect(OWOP.options.serverAddress[0], worldname);
+						wdow.close();
+					}, 500);
+				} else {
+					document.getElementById("thereisnoaddress").innerHTML = "Please include ws/wss";
 				}
-			}.bind({w: this, win: wdow})
+			}
+		}));
+
+		wdow.addObj(makeHTML("br", {}));
+
+		wdow.addObj(makeHTML("div", {
+			style: "color: red",
+			id: "thereisnoaddress"
+		}));
+		wdow.addObj(makeHTML("div", {
+			style: "color: gray",
+			innerHTML: "Made by mathias377"
 		}));
 	}));
 }
-*/
+
 function logoMakeRoom(bool) {
 	elements.loadUl.style.transform = bool ? "translateY(-75%) scale(0.5)" : "";
 }
@@ -1414,10 +1462,10 @@ function init() {
 		};
 	}(_conf.options.serverAddress);
 
-	retryingConnect(serverGetter, misc.urlWorldName);
+	openServerSelector();
 
 	elements.reconnectBtn.onclick = function () {
-		return retryingConnect(serverGetter, misc.urlWorldName);
+		return openServerSelector();
 	};
 
 	misc.tickInterval = setInterval(tick, 1000 / _conf.options.tickSpeed);
