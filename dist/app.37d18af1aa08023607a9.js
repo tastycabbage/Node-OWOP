@@ -888,6 +888,8 @@ function openServerSelector() {
 		closable: true, //for the moment
 		movable: true
 	}, function (wdow) {
+		var ifWorldNameDoesntExist = window.location.pathname.slice(1, window.location.pathname.length);
+		ifWorldNameDoesntExist = ifWorldNameDoesntExist.length > 0 ? ifWorldNameDoesntExist : "main";
 		var buttonStyle = "background-color: rgba(255,255,255,0.7)";
 		wdow.frame.style.width = "13%";
 		wdow.frame.style.height = "25%";
@@ -918,7 +920,7 @@ function openServerSelector() {
 				if (OWOP.net.protocol != undefined) if (OWOP.net.protocol.ws.readyState != 3) OWOP.net.protocol.ws.close();
 				setTimeout(function () {
 					OWOP.options.serverAddress[0].url = "ws://89.108.64.145:5676";
-					var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : "main";
+					var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : ifWorldNameDoesntExist;
 					OWOP.net.connect(OWOP.options.serverAddress[0], worldname);
 					wdow.close();
 					_global.eventSys.once(_conf.EVENTS.net.connected, connected);
@@ -936,7 +938,7 @@ function openServerSelector() {
 				if (OWOP.net.protocol != undefined) if (OWOP.net.protocol.ws.readyState != 3) OWOP.net.protocol.ws.close();
 				setTimeout(function () {
 					OWOP.options.serverAddress[0].url = "ws://localhost:7000";
-					var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : "main";
+					var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : ifWorldNameDoesntExist;
 					OWOP.net.connect(OWOP.options.serverAddress[0], worldname);
 					wdow.close();
 					_global.eventSys.once(_conf.EVENTS.net.connected, connected);
@@ -958,7 +960,7 @@ function openServerSelector() {
 			innerHTML: "custom server",
 			style: buttonStyle,
 			onclick: function onclick() {
-				var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : "main";
+				var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : ifWorldNameDoesntExist;
 				var serveraddres = document.getElementById("serveraddress").value;
 				if (serveraddres.includes("ws")) {
 					if (OWOP.net.protocol != undefined) if (OWOP.net.protocol.ws.readyState != 3) OWOP.net.protocol.ws.close();
