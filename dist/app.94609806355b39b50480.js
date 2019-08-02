@@ -865,6 +865,24 @@ function updatePlayerCount(count) {
 }
 
 function openServerSelector() {
+	_global.eventSys.once(_conf.EVENTS.net.connecting, function () {
+		console.debug('Trying \'' + OWOP.options.serverAddress[0].title + '\' (' + OWOP.options.serverAddress[0].url + ')...');
+		statusMsg(true, 'Connecting to \'' + OWOP.options.serverAddress[0].title + '\'...');
+		showLoadScr(true, false);
+		misc.connecting = true;
+	});
+	var disconnected = function disconnected() {
+		statusMsg(false, 'Chose server...');
+		_global.eventSys.removeListener(_conf.EVENTS.net.connected, connected);
+		openServerSelector();
+	};
+	var connected = function connected() {
+		statusMsg(false, "Connected!");
+		_global.eventSys.removeListener(_conf.EVENTS.net.disconnected, disconnected);
+		_global.eventSys.once(_conf.EVENTS.net.disconnected, inGameDisconnected);
+		misc.connecting = false;
+	};
+
 	OWOP.windowSys.addWindow(new OWOP.windowSys.class.window("Server selector", {
 		centered: true,
 		closable: true, //for the moment
@@ -903,6 +921,8 @@ function openServerSelector() {
 					var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : "main";
 					OWOP.net.connect(OWOP.options.serverAddress[0], worldname);
 					wdow.close();
+					_global.eventSys.once(_conf.EVENTS.net.connected, connected);
+					_global.eventSys.once(_conf.EVENTS.net.disconnected, disconnected);
 				}, 500);
 			}
 		}));
@@ -919,6 +939,8 @@ function openServerSelector() {
 					var worldname = document.getElementById("worldname").value.length > 0 ? document.getElementById("worldname").value : "main";
 					OWOP.net.connect(OWOP.options.serverAddress[0], worldname);
 					wdow.close();
+					_global.eventSys.once(_conf.EVENTS.net.connected, connected);
+					_global.eventSys.once(_conf.EVENTS.net.disconnected, disconnected);
 				}, 500);
 			}
 		}));
@@ -944,6 +966,8 @@ function openServerSelector() {
 						OWOP.options.serverAddress[0].url = serveraddres;
 						OWOP.net.connect(OWOP.options.serverAddress[0], worldname);
 						wdow.close();
+						_global.eventSys.once(_conf.EVENTS.net.connected, connected);
+						_global.eventSys.once(_conf.EVENTS.net.disconnected, disconnected);
 					}, 500);
 				} else {
 					document.getElementById("thereisnoaddress").innerHTML = "Please include ws/wss";
@@ -1464,9 +1488,7 @@ function init() {
 
 	openServerSelector();
 
-	elements.reconnectBtn.onclick = function () {
-		return openServerSelector();
-	};
+	elements.reconnectBtn.onclick = openServerSelector;
 
 	misc.tickInterval = setInterval(tick, 1000 / _conf.options.tickSpeed);
 }
