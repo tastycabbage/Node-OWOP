@@ -3350,7 +3350,7 @@ _global.eventSys.once(_conf.EVENTS.misc.toolsRendered, function () {
 		var fonts = {};
 		var font = null;
 
-		var fontInput = new OWOP.windowSys.class.input("Choose Font when no work do enter and say after u enter   . .", 955, "number", function (value) {
+		var fontInput = new OWOP.windowSys.class.input("Choose Font", "955, 468, 3733, 179, 234, 225, 409", "number", function (value) {
 			var id = parseInt(value);
 			if (id in fonts) {
 				font = id;

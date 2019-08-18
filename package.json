@@ -1,25 +1,30 @@
 {
-  "name": "Node OWOP",
-  "description": "It's simple node js OWOP server",
+  "name": "node-owop-server",
   "version": "1.9.7",
+  "description": "Node OWOP Server",
+  "main": "backserver.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathmakgakpak/Node-OWOP.git"
+  },
   "keywords": [
-    "Node OWOP",
-    "OWOP for spammers",
+    "OWOP-Server",
     "OWOP",
-    "OWOP server"
+    "Node-OWOP-Server"
   ],
-  "contributors": [
-    {
-      "name": "mathias377",
-      "email": "",
-      "web": ""
-    }
-  ],
+  "author": "mathias377 / @mathias377#3326",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mathmakgakpak/Node-OWOP/issues"
+  },
   "dependencies": {
-    "fs": "^0.0.1-security",
+    "ws": "^7.1.1",
     "sqlite3": "^4.0.8",
-    "ws": "^7.1.0",
     "request": "^2.88.0"
   },
-  "homepage": "https://github.com/mathmakgakpak/Node-OWOP"
+  "homepage": "https://github.com/mathmakgakpak/Node-OWOP#readme"
 }

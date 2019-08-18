@@ -12,7 +12,8 @@ if (fs.existsSync("./config.json")) {
 		"modlogin": "your_mod_pass",
 		"global_chat_pw": "your_global_pass",
 		"iplimit": true,
-		"maxconnections": 3,
+		"maxconnectionsperip": 3,
+		"maxconnections": 500,
 		"port": 7000,
 		"antiProxy": true
 	}
@@ -392,6 +393,33 @@ function wssOnConnection(ws, req) {
 				}
 			}
 		}
+		class Bucket {
+			constructor(rate, time) {
+				this.lastCheck = Date.now();
+				this.allowance = rate;
+				this.rate = rate;
+				this.time = time;
+				this.infinite = false;
+			}
+
+			canSpend(count) {
+				if (this.infinite) {
+					return true;
+				}
+
+				this.allowance += (Date.now() - this.lastCheck) / 1000 * (this.rate / this.time);
+				this.lastCheck = Date.now();
+				if (this.allowance > this.rate) {
+					this.allowance = this.rate;
+				}
+				if (this.allowance < count) {
+					return false;
+				}
+				this.allowance -= count;
+				return true;
+			}
+		}
+
 		if (terminatedSocketServer) return;
 		var data = new Uint8Array(message)
 		var dv = new DataView(data.buffer)
@@ -471,7 +499,7 @@ function wssOnConnection(ws, req) {
 					}
 					break;
 				case 11: //pixel update
-					if (client.serverRank == permissions.none) return;
+					if (!client.pbucket.canSpend(1)) return;
 					var x = dv.getInt32(0, true);
 					var y = dv.getInt32(4, true);
 					var r = dv.getUint8(8);
@@ -611,7 +639,8 @@ function wssOnConnection(ws, req) {
 					req,
 					ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress.replace('::ffff:', ''),
 					ws,
-					world: worldName
+					world: worldName,
+					pbucket: new Bucket(0, 0)
 				}
 
 				doUpdatePlayerPos(worldName, {
@@ -636,7 +665,25 @@ function wssOnConnection(ws, req) {
 					send(" [Server] This world has a password set. Use '/pass PASSWORD' to unlock drawing.")
 					client.serverRank = permissions.none
 					send(new Uint8Array([PERMISSIONS, permissions.none]))
+					var paintrate = 0;
+					var per = 1;
+					var quota = new Uint8Array(5)
+					var quota_dv = new DataView(quota.buffer);
+					quota_dv.setUint8(0, SET_PQUOTA);
+					quota_dv.setUint16(1, paintrate, true);
+					quota_dv.setUint16(3, per, true);
+					send(quota)
+					client.pbucket = new Bucket(paintrate, per)
 				} else {
+					var paintrate = 32;
+					var per = 4;
+					var quota = new Uint8Array(5);
+					var quota_dv = new DataView(quota.buffer);
+					quota_dv.setUint8(0, SET_PQUOTA);
+					quota_dv.setUint16(1, paintrate, true);
+					quota_dv.setUint16(3, per, true);
+					send(quota)
+					client.pbucket = new Bucket(paintrate, per)
 					client.serverRank = permissions.user
 					send(new Uint8Array([PERMISSIONS, permissions.user]))
 				}
@@ -651,14 +698,6 @@ function wssOnConnection(ws, req) {
 						}
 					})
 				}
-
-				var paintrate = 32;
-				var quota = new Uint8Array(5)
-				var quota_dv = new DataView(quota.buffer);
-				quota_dv.setUint8(0, SET_PQUOTA);
-				quota_dv.setUint16(1, paintrate, true);
-				quota_dv.setUint16(3, 2, true);
-				send(quota)
 
 				var banned = fs.readFileSync("./bans.txt").toString().split("\n");
 
@@ -676,7 +715,7 @@ function wssOnConnection(ws, req) {
 						}
 
 					}
-					if (connectionsfromhim > config.maxconnections) {
+					if (connectionsfromhim > config.maxconnectionsperip) {
 						client.send("Too many connections from you.")
 						ws.close()
 
@@ -771,6 +810,15 @@ function wssOnConnection(ws, req) {
 								send("Server: You are now an admin. Do /help for a list of commands.");
 								client.serverRank = permissions.admin
 								client.clientRank = permissions.admin
+								var paintrate = 32;
+								var per = 0;
+								var quota = new Uint8Array(5);
+								var quota_dv = new DataView(quota.buffer);
+								quota_dv.setUint8(0, SET_PQUOTA);
+								quota_dv.setUint16(1, paintrate, true);
+								quota_dv.setUint16(3, per, true);
+								send(quota)
+								client.pbucket = new Bucket(paintrate, per)
 							} else {
 								send("Invalid password");
 							}
@@ -818,12 +866,16 @@ function wssOnConnection(ws, req) {
 							value.shift();
 							value = value.join(" ")
 
+							if (property == "adminlogin" || property == "modlogin" || property == "global_chat_pw") return;
+
 							if (property != undefined && value.length > 0) {
 								config[property] = value
 								fs.writeFile("./config.json", JSON.stringify(config, null, 2), function(err) {
 									if (err) {
 										return console.log(err);
 									}
+									sendStaff("DEVSet value of \"" + property + "\" to \"" + value + "\"")
+									console.log("Set value of \"" + property + "\" to \"" + value + "\"")
 								});
 							} else if (value == "" && property != undefined) {
 								delete config[property]
@@ -831,6 +883,8 @@ function wssOnConnection(ws, req) {
 									if (err) {
 										return console.log(err);
 									}
+									sendStaff("DEVRemoved value " + value)
+									console.log("Removed value " + value)
 								});
 							} else {
 								client.send("To set/add property: /setprop <property> <value>")
@@ -841,6 +895,15 @@ function wssOnConnection(ws, req) {
 							if (cmdCheck[1] == config.modlogin) {
 								send(new Uint8Array([PERMISSIONS, permissions.mod]))
 								send("Server: You are now an mod. Do /help for a list of commands.");
+								var paintrate = 32;
+								var per = 2;
+								var quota = new Uint8Array(5);
+								var quota_dv = new DataView(quota.buffer);
+								quota_dv.setUint8(0, SET_PQUOTA);
+								quota_dv.setUint16(1, paintrate, true);
+								quota_dv.setUint16(3, per, true);
+								send(quota)
+								client.pbucket = new Bucket(paintrate, per)
 								client.serverRank = permissions.mod
 								client.clientRank = permissions.mod
 							} else {
