@@ -24,8 +24,14 @@ class Connection {
 		ws.on("close", this.onClose.bind(this));
 		ws.on("error", this.onError.bind(this));
 	}
-	sendToAll() {
-
+	sendTo(who, msg) {
+		switch(who) {
+			case "world":
+			this.world.clients.forEach(function(client) {
+				client.send(msg)
+			})
+			break;
+		}
 	}
 	onMessage(message) {
 		var data = new Uint8Array(message)
@@ -36,11 +42,38 @@ class Connection {
 			//cases
 			new Case(message, this.client, this.world, this.worlds, this.manager, this.updateClock).case()
 		} else if (this.player && !isBinary) {
-			//messages and commands
-			if(message.startsWith("/")) {
+			var tmpIsStaff = this.client.rank > permissions.user
+			var tmpIsMod = this.client.rank == permissions.mod
+			var tmpIsAdmin = this.client.rank == permissions.admin
+			var before = "";
+			if(this.client.stealth) {
+				tmpIsAdmin = false;
+				tmpIsMod = false;
+				tmpIsStaff = false;
+			}
+			if(tmpIsAdmin) before += "(A) ";
+			if(tmpIsMod) before += "(M) ";
+			if (this.client.nick && !tmp_isStaff) {
+				before += `[${this.client.id}] ${this.client.nick}`;
+			} else if (this.client.nick && tmp_isStaff) {
+				before += this.client.nick;
+			}
+			if (!this.client.nick) {
+				before += this.client.id;
+			}
+			if (len > 1 && message[len - 1] == String.fromCharCode(10)) {
+				var chat = message.slice(0, len - 1);
+				if (this.client.rank <= permissions.user) {
+					chat = chat.replace(/</g, "&lt;")
+					chat = chat.replace(/>/g, "&gt;")
+				}
+				if (chat.length <= 512 || this.client.rank > permissions.user) {
+					if (chat[0] == "/") {
 
-			} else {
-				
+					} else {
+						this.sendTo("world", before + ": " + chat)
+					}
+				}
 			}
 		} else if (!this.player && isBinary) {
 

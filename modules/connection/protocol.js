@@ -14,10 +14,10 @@ var protocol = {
 		antiCheat: 1,
 		//captcha: 6,
 		requestChunk: 8,
-		clearChunk: 9,
 		protectChunk: 10,
 		setPixel: 11,
 		playerUpdate: 12,
+		clearChunk: 13,
 		paste: 776
 	}
 }

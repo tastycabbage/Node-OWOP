@@ -14,13 +14,13 @@ class Client {
 		this.tool = 0;
 		this.id = 0;
 		this.nick = "";
+		this.send = function(data) {
+			try {
+				ws.send(data);
+			} catch (e) {};
+		}
 		this.stealth = false;
 		this.rank = 0;
-		this.send = function (data) {
-			try {
-				ws.send(data)
-			} catch (e) {};
-		};
 		this.ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress).split(",")[0].replace('::ffff:', '');
 		this.world = "";
 		this.pixelBucket = new Bucket(0, 0);
