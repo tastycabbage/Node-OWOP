@@ -37,7 +37,11 @@ class Connection {
 			new Case(message, this.client, this.world, this.worlds, this.manager, this.updateClock).case()
 		} else if (this.player && !isBinary) {
 			//messages and commands
+			if(message.startsWith("/")) {
 
+			} else {
+				
+			}
 		} else if (!this.player && isBinary) {
 
 			//player on real connect
@@ -68,47 +72,19 @@ class Connection {
 						this.worlds.push(this.world)
 					}
 
-				var pass = this.manager.get_prop(this.client.world, "pass", undefined);
 
+				this.client.setRank(permissions.user)
 
+				var pass = this.manager.get_prop(this.world.name, "pass");
 				if(pass) {
 					this.client.send(" [Server] This world has a password set. Use '/pass PASSWORD' to unlock drawing.")
-					this.client.serverRank = permissions.none
-					this.client.send(new Uint8Array([protocol.server.setRank, this.client.serverRank]))
-					var paintrate = 0;
-					var per = 1;
-					var quota = new Uint8Array(5)
-					var quota_dv = new DataView(quota.buffer);
-					quota_dv.setUint8(0, protocol.server.setPQuota);
-					quota_dv.setUint16(1, paintrate, true);
-					quota_dv.setUint16(3, per, true);
-					this.client.send(quota)
-					this.client.pbucket = new Bucket(paintrate, per)
-				} else {
-					this.client.serverRank = permissions.admin
-					this.client.send(new Uint8Array([protocol.server.setRank, this.client.serverRank]))
-					var paintrate = 50;
-					var per = 4;
-					var quota = new Uint8Array(5)
-					var quota_dv = new DataView(quota.buffer);
-					quota_dv.setUint8(0, protocol.server.setPQuota);
-					quota_dv.setUint16(1, paintrate, true);
-					quota_dv.setUint16(3, per, true);
-					this.client.send(quota)
-					this.client.pbucket = new Bucket(paintrate, per)
+					this.client.setRank(permissions.none)
 				}
-				this.client.send("Hello This is test version of Node OWOP...")
-				this.client.send("As you see it's not ended.")
-				this.client.id = this.world.latestId
+
+				this.client.send(this.manager.get_prop(this.world.name, "motd"))
+				this.client.setId(this.world.latestId)
 				this.world.latestId++
-
-
 				this.player = true;
-				var id = new Uint8Array(5);
-				var id_dv = new DataView(id.buffer);
-				id_dv.setUint8(0, protocol.server.setId);
-				id_dv.setUint32(1, this.client.id, true);
-				this.client.send(new Uint8Array(id))
 				this.world.clients.push(this.client);
 			}
 

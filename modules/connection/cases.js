@@ -72,7 +72,7 @@ class Case {
 					break;
       break;
       case protocol.client.setPixel:
-      if (!this.client.pbucket.canSpend(1)) return;
+      if (!this.client.pixelBucket.canSpend(1)) return;
       var x = this.dv.getInt32(0, true);
 					var y = this.dv.getInt32(4, true);
 					var r = this.dv.getUint8(8);

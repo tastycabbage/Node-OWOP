@@ -1,11 +1,33 @@
 {
-  "adminlogin": "your_admin_pass",
-  "modlogin": "your_mod_pass",
-  "global_chat_pw": "your_global_pass",
-  "iplimit": true,
-  "maxconnectionsperip": 3,
-  "maxconnections": 500,
-  "port": 7000,
-  "antiProxy": true,
-  "banMessage": "You are banned. Apeal for unban on: https://discord.gg/DTGAq4b"
+	"adminlogin": "your_admin_pass",
+	"modlogin": "your_mod_pass",
+	"global_chat_pw": "your_global_pass",
+	"iplimit": true,
+	"maxconnectionsperip": 3,
+	"maxconnections": 500,
+	"port": 8000,
+	"antiProxy": true,
+	"messages": {
+		"unbanLink": "https://discord.gg/DTGAq4b",
+		"closeMsg": "Server is restarting..."
+	},
+	"bucket": {
+		"pixel": {
+			"none": [0, 1],
+			"user": [50, 4],
+			"mod": [32, 2],
+			"admin": [32, 0]
+		},
+		"chat": {
+			"none": [4, 6],
+			"user": [4, 6],
+			"mod": [32, 0],
+			"admin": [32, 0]
+		}
+	},
+	"captcha": {
+		"enabled": false,
+		"serverKey": "",
+		"clientSideVerificationKey": "CaptchA"
+	}
 }
