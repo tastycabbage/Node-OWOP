@@ -6,6 +6,7 @@
 	"maxconnectionsperip": 3,
 	"maxconnections": 500,
 	"port": 8000,
+	"maxNickLength": 12,
 	"antiProxy": true,
 	"messages": {
 		"unbanLink": "https://discord.gg/DTGAq4b",

@@ -3,29 +3,18 @@ const fs = require("fs");
 const ws = require("ws");
 const discord = require("discord.js");
 const request = require("request");
-const EventEmitter = require("events");
 const UpdateClock = require("./modules/UpdateClock.js")
+const manager = require("./modules/manager.js")
 var worlds = [];
 var updateClock = new UpdateClock(worlds)
-
-
-//server variables
 var bansIgnore = false;
 var wss;
 var config = require("./config.json");
-
 var protocol = require("./modules/connection/protocol.js")
 var captchaStates = require("./modules/captchaStates.js")
 var worldTemplate = require("./modules/worldTemplate.js");
 var bans = require("./bans.json")
-const manager = require("./modules/manager.js")
-
-//public variables
-
 var terminatedSocketServer = false;
-
-var serverEvents = new EventEmitter();
-
 
 function createWSServer() {
 	wss = new ws.Server({
@@ -52,13 +41,6 @@ function createWSServer() {
 				}
 			}
 		}*/
-
-		if (config.captcha.enabled == true) {
-			ws.send(new Uint8Array([protocol.server.captcha, captchaStates.waiting]))
-		} else {
-			ws.send(new Uint8Array([protocol.server.captcha, captchaStates.ok]))
-		}
-
 		var connection = new Connection(ws, req, worlds, bans, manager, updateClock);
 	});
 }
@@ -68,20 +50,17 @@ function beginServer() {
 	createWSServer()
 	console.log("Server started. Type /help for help")
 }
-
+var rl = require("readline").createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
+//server controler
 if (process.platform === "win32") {
-  var rl = require("readline").createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  rl.on("SIGINT", function () {
-    process.emit("SIGINT");
-  });
+	rl.on("SIGINT", function() {
+		process.emit("SIGINT");
+	});
 }
-
-process.on("SIGINT", function () {
-  //graceful shutdown
+process.on("SIGINT", function() {
 	console.log("Exiting...");
 	for (var w in worlds) {
 		var world = worlds[w];
@@ -93,12 +72,9 @@ process.on("SIGINT", function () {
 	manager.close_database()
 	process.exit()
 });
-
-//Server Controler
-var stdin = process.openStdin();
 var serverOpNick = "";
 var serverOpRank = 3;
-stdin.on("data", function(d) {
+rl.on("line", function(d) {
 	var msg = d.toString().trim();
 	if (terminatedSocketServer) return;
 	if (msg.startsWith("/")) {
@@ -113,16 +89,16 @@ stdin.on("data", function(d) {
 			console.log("/nick <nick> - Changes your nick.");
 			console.log("/rank <user|moderator|admin|server|tell|discord> - Changes your rank. (Only affects messages.)");
 		} else if (cmdCheck[0] == "kill" || cmdCheck[0] == "stop") {
-				console.log("Exiting...");
-				for (var w in worlds) {
-					var world = worlds[w];
-					for (var c = 0; c < world.clients.length; c++) {
-						var client = world.clients[c];
-						client.send(config.messages.closeMsg);
-					}
+			console.log("Exiting...");
+			for (var w in worlds) {
+				var world = worlds[w];
+				for (var c = 0; c < world.clients.length; c++) {
+					var client = world.clients[c];
+					client.send(config.messages.closeMsg);
 				}
-				manager.close_database()
-				process.exit()
+			}
+			manager.close_database()
+			process.exit()
 		} else if (cmdCheck[0] == "eval" || cmdCheck[0] == "js") {
 			try {
 				console.log(String(eval(argString)));

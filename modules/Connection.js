@@ -20,43 +20,48 @@ class Connection {
 		this.client = new Client(ws, req);
 		this.updateClock = updateClock
 		this.player = false
+		if (config.captcha.enabled == true) {
+			this.client.send(new Uint8Array([protocol.server.captcha, captchaStates.waiting]))
+		} else {
+			this.client.send(new Uint8Array([protocol.server.captcha, captchaStates.ok]))
+		}
 
 		ws.on("message", this.onMessage.bind(this));
 		ws.on("close", this.onClose.bind(this));
 		ws.on("error", this.onError.bind(this));
 	}
 	sendTo(who, msg) {
-		switch(who) {
+		switch (who) {
 			case "world":
-			this.world.clients.forEach(function(client) {
-				client.send(msg);
-			})
-			break;
+				this.world.clients.forEach(function(client) {
+					client.send(msg);
+				})
+				break;
 			case "worldstaff":
-			this.world.clients.forEach(function(client) {
-				if(client.rank > permissions.user) {
-					client.send(msg);
-				}
-			})
-			break;
+				this.world.clients.forEach(function(client) {
+					if (client.rank > permissions.user) {
+						client.send(msg);
+					}
+				})
+				break;
 			case "all":
-			for(var i = 0; i < this.worlds.length; i++) {
-				for(var c = 0; c < this.worlds[i].clients.length; c++) {
-					var client = this.worlds[i].clients[c]
-					client.send(msg);
-				}
-			}
-			break;
-			case "allstaff":
-			for(var i = 0; i < this.worlds.length; i++) {
-				for(var c = 0; c < this.worlds[i].clients.length; c++) {
-					var client = this.worlds[i].clients[c]
-					if(client.rank > permissions.user) {
+				for (var i = 0; i < this.worlds.length; i++) {
+					for (var c = 0; c < this.worlds[i].clients.length; c++) {
+						var client = this.worlds[i].clients[c]
 						client.send(msg);
 					}
 				}
-			}
-			break;
+				break;
+			case "allstaff":
+				for (var i = 0; i < this.worlds.length; i++) {
+					for (var c = 0; c < this.worlds[i].clients.length; c++) {
+						var client = this.worlds[i].clients[c]
+						if (client.rank > permissions.user) {
+							client.send(msg);
+						}
+					}
+				}
+				break;
 		}
 	}
 	onMessage(message) {
@@ -72,16 +77,16 @@ class Connection {
 			var tmpIsMod = this.client.rank == permissions.mod
 			var tmpIsAdmin = this.client.rank == permissions.admin
 			var before = "";
-			if(this.client.stealth) {
+			if (this.client.stealth) {
 				tmpIsAdmin = false;
 				tmpIsMod = false;
 				tmpIsStaff = false;
 			}
-			if(tmpIsAdmin) before += "(A) ";
-			if(tmpIsMod) before += "(M) ";
-			if (this.client.nick && !tmp_isStaff) {
+			if (tmpIsAdmin) before += "(A) ";
+			if (tmpIsMod) before += "(M) ";
+			if (this.client.nick && !tmpIsStaff) {
 				before += `[${this.client.id}] ${this.client.nick}`;
-			} else if (this.client.nick && tmp_isStaff) {
+			} else if (this.client.nick && tmpIsStaff) {
 				before += this.client.nick;
 			}
 			if (!this.client.nick) {
@@ -93,6 +98,7 @@ class Connection {
 					chat = chat.replace(/</g, "&lt;")
 					chat = chat.replace(/>/g, "&gt;")
 				}
+				console.log(`World name: ${this.client.world} id/nick: ${before} ip: ${this.client.ip} message: ${chat}`);
 				if (chat.length <= 512 || this.client.rank > permissions.user) {
 					if (chat[0] == "/") {
 						new Commands(chat, this.client, this.world, this.worlds, this.manager)
@@ -117,25 +123,25 @@ class Connection {
 					}.bind(this))
 				}
 
-
 				for (var i = 0; i < data.length - 2; i++) {
 					this.client.world += String.fromCharCode(data[i]);
 				}
 				this.client.world = this.client.world.replace(/[^a-zA-Z0-9\._]/gm, "").toLowerCase();
 				if (!this.client.world) this.client.world = "main";
-				this.world = this.worlds.find(function(world) {return world.name == this.client.world}.bind(this));
-					if (!this.world) {
-						this.manager.world_init(this.client.world)
-						this.world = worldTemplate();
-						this.world.name = this.client.world
-						this.worlds.push(this.world)
-					}
-
+				this.world = this.worlds.find(function(world) {
+					return world.name == this.client.world
+				}.bind(this));
+				if (!this.world) {
+					this.manager.world_init(this.client.world)
+					this.world = worldTemplate();
+					this.world.name = this.client.world
+					this.worlds.push(this.world)
+				}
 
 				this.client.setRank(permissions.user)
 
 				var pass = this.manager.get_prop(this.world.name, "pass");
-				if(pass) {
+				if (pass) {
 					this.client.send(" [Server] This world has a password set. Use '/pass PASSWORD' to unlock drawing.")
 					this.client.setRank(permissions.none)
 				}
@@ -146,7 +152,6 @@ class Connection {
 				this.player = true;
 				this.world.clients.push(this.client);
 			}
-
 
 		} else if (!this.player && !isBinary) {
 			if (message.startsWith(config.captcha.clientSideVerificationKey) && config.captcha.enabled == true) {
@@ -182,7 +187,7 @@ class Connection {
 			delete this.world.clients[clIdx]
 			this.world.clients.sort().pop()
 		}
-		if(!this.world.clients.length) {
+		if (!this.world.clients.length) {
 			this.manager.world_unload()
 			delete this.worlds[worldIndex]
 			this.worlds.sort().pop()
