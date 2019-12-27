@@ -1,0 +1,11 @@
+{
+  "adminlogin": "your_admin_pass",
+  "modlogin": "your_mod_pass",
+  "global_chat_pw": "your_global_pass",
+  "iplimit": true,
+  "maxconnectionsperip": 3,
+  "maxconnections": 500,
+  "port": 7000,
+  "antiProxy": true,
+  "banMessage": "You are banned. Apeal for unban on: https://discord.gg/DTGAq4b"
+}

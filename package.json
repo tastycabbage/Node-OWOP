@@ -1,8 +1,17 @@
 {
-  "name": "node-owop-server",
-  "version": "1.9.7",
-  "description": "Node OWOP Server",
-  "main": "backserver.js",
+  "name": "node-owop",
+  "version": "2.0.0",
+  "description": "Node OWOP is OWOP Server but in node js",
+  "main": "server.js",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "events": "^3.0.0",
+    "fs": "0.0.1-security",
+    "request": "^2.88.0",
+    "sqlite3": "^4.1.1",
+    "ws": "^7.2.1"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -12,19 +21,13 @@
     "url": "git+https://github.com/mathmakgakpak/Node-OWOP.git"
   },
   "keywords": [
-    "OWOP-Server",
-    "OWOP",
-    "Node-OWOP-Server"
+    "Node-OWOP",
+    "OWOP-Server"
   ],
-  "author": "mathias377 / @mathias377#3326",
+  "author": "mathias377",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/mathmakgakpak/Node-OWOP/issues"
-  },
-  "dependencies": {
-    "ws": "^7.1.1",
-    "sqlite3": "^4.0.8",
-    "request": "^2.88.0"
   },
   "homepage": "https://github.com/mathmakgakpak/Node-OWOP#readme"
 }

@@ -1,69 +1,159 @@
-var fs   = require("fs");
-var http = require("http");
-var url  = require("url");
-var ws   = require("ws");
+const Connection = require('./modules/Connection.js');
+const fs = require("fs");
+const ws = require("ws");
+const discord = require("discord.js");
+const request = require("request");
+const EventEmitter = require("events");
 
-var clientDir = "./dist/";
 
-var fileData = {};
+//server variables
+var bansIgnore = false;
+var wss;
+var config = require("./config.json");
 
-function match(str1, str2) {
-	str1 += "";
-	str2 += "";
-	var res = str1.localeCompare(str2, "en", {
-		sensitivity: "base"
+var protocol = require("./modules/connection/protocol.js")
+var captchaStates = require("./modules/captchaStates.js")
+var worldTemplate = require("./modules/worldTemplate.js");
+var bans = require("./bans.json")
+const manager = require("./modules/manager.js")
+
+//public variables
+
+var terminatedSocketServer = false;
+var worlds = [];
+var serverEvents = new EventEmitter();
+
+
+function createWSServer() {
+	wss = new ws.Server({
+		port: config.port
 	});
-	return !res;
-}
-
-function listDir(addr, MP, dsu, po, opt) { // object, file path, web path, path only, options
-	if(!opt) opt = {};
-	var con = fs.readdirSync(MP)
-	for(var i in con) {
-		var currentPath = MP + con[i]
-		if(!fs.lstatSync(currentPath).isDirectory()) {
-			if(!po) {
-				addr[dsu + con[i]] = fs.readFileSync(currentPath)
+	wss.on("connection", function(ws, req) {
+		if (terminatedSocketServer) {
+			ws.send(config.closeMsg)
+			ws.close();
+		}
+		/*if(ban.ip) {
+			if(!ban.expires_at) {
+				this.client.send("You got perm ban. Apeal for unban on: " + config.unbanLink)
+				this.client.send("Reason: " + ban.reason)
+				this.client.ws.close()
 			} else {
-				addr[dsu + con[i]] = currentPath;
+				if(Date.now() < parseInt(ban.expires_at)) {
+					let date = new Date(parseInt(ban.expires_at));
+					this.client.send(`You are temp-banned.`)
+					this.client.send(`It expires at ${date.getYear()}-${date.getMonth()}-${date.getDay()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+					this.client.send("Apeal for unban on: " + config.unbanLink)
+					this.client.send("Reason: " + ban.reason)
+					this.client.ws.close()
+				}
 			}
+		}*/
+
+		if (config.captcha.enabled == true) {
+			ws.send(new Uint8Array([protocol.server.captcha, captchaStates.waiting]))
 		} else {
-			// Omitted folder? Cancel scanning folder
-			if(con[i] == opt.omit_folder) {
-				return;
-			}
-			listDir(addr, MP + con[i] + "/", dsu + con[i] + "/", po)
+			ws.send(new Uint8Array([protocol.server.captcha, captchaStates.ok]))
 		}
-	}
+
+		var connection = new Connection(ws, req, worlds, bans, manager);
+	});
 }
 
-listDir(fileData, clientDir, "", null)
+function beginServer() {
+	//loadDatabase()
+	createWSServer()
+	console.log("Server started. Type /help for help")
+}
 
-var server = http.createServer(function(req, res) {
-	var URL = url.parse(req.url);
-	URL = URL.pathname;
-	if(URL.charAt(0) == "/") URL = URL.substr(1);
-	if(URL.endsWith("/")) URL = URL.slice(0, URL.length - 1);
-	
-	var file = null;
-	if(URL == "") {
-		file = "index.html"
-	} else {
-		for(var i in fileData) {
-			if(match(i, URL)) {
-				file = i;
-				break;
-			}
+if (process.platform === "win32") {
+  var rl = require("readline").createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  rl.on("SIGINT", function () {
+    process.emit("SIGINT");
+  });
+}
+
+process.on("SIGINT", function () {
+  //graceful shutdown
+	console.log("Exiting...");
+	for (var w in worlds) {
+		var world = worlds[w];
+		for (var c = 0; c < world.clients.length; c++) {
+			var client = world.clients[c];
+			client.send(config.messages.closeMsg);
 		}
 	}
-	if(file == null) {
-		file = "index.html"
-	}
-	
-	res.write(fileData[file], "binary");
-	res.end();
-})
-server.listen(9001, function() {
-	var addr = server.address();
-	console.log("Node OWOP\n" + addr.port + ". Address: " + addr.address + ":" + addr.port)
+	manager.close_database()
+	process.exit()
 });
+
+//Server Controler
+var stdin = process.openStdin();
+var serverOpNick = "";
+var serverOpRank = 3;
+stdin.on("data", function(d) {
+	var msg = d.toString().trim();
+	if (terminatedSocketServer) return;
+	if (msg.startsWith("/")) {
+		var cmdCheck = msg.slice(1).split(" ");
+		cmdCheck[0] = cmdCheck[0].toLowerCase();
+		var argString = cmdCheck.slice(1).join(" ").trim();
+		cmdCheck.filter(x => x);
+		if (cmdCheck[0] == "help") {
+			console.log("/help - Lists all commands.");
+			console.log("/stop, /kill - Closes the server.");
+			console.log("/js, /eval <code> - Evaluates the given code.");
+			console.log("/nick <nick> - Changes your nick.");
+			console.log("/rank <user|moderator|admin|server|tell|discord> - Changes your rank. (Only affects messages.)");
+		} else if (cmdCheck[0] == "kill" || cmdCheck[0] == "stop") {
+				console.log("Exiting...");
+				for (var w in worlds) {
+					var world = worlds[w];
+					for (var c = 0; c < world.clients.length; c++) {
+						var client = world.clients[c];
+						client.send(config.messages.closeMsg);
+					}
+				}
+				manager.close_database()
+				process.exit()
+		} else if (cmdCheck[0] == "eval" || cmdCheck[0] == "js") {
+			try {
+				console.log(String(eval(argString)));
+			} catch (e) {
+				console.log(e);
+			}
+		} else if (cmdCheck[0] == "nick") {
+			serverOpNick = argString;
+			if (argString) {
+				console.log("Nickname set to: '" + argString + "'");
+			} else {
+				console.log("Nickname reset.");
+			}
+		} else if (cmdCheck[0] == "rank") {
+			var rankIndex = ["user", "moderator", "admin", "server", "tell", "discord"].indexOf(cmdCheck[1].toLowerCase())
+			if (~rankIndex) {
+				serverOpRank = rankIndex;
+				console.log("Set rank to " + cmdCheck[1].toLowerCase() + ".");
+			} else {
+				console.log("Usage: /rank <user|moderator|admin|server|tell|discord>")
+			}
+		}
+	} else {
+		function sendToWorlds(msg) {
+			for (var gw in worlds) {
+				var worldCurrent = worlds[gw];
+				var clientsOfWorld = worldCurrent.clients;
+				for (var s = 0; s < clientsOfWorld.length; s++) {
+					var sendToClient = clientsOfWorld[s].send;
+					sendToClient(msg);
+				}
+			}
+		}
+		sendToWorlds((serverOpNick && ["[0] ", "", " ", "[Server] "][serverOpRank] || ["", "(M) ", "(A) ", "Server", "-> ", "[D] "][serverOpRank]).trimLeft() + (serverOpNick || (serverOpRank == 3 ? "" : "0")) + ": " + msg);
+	}
+});
+beginServer()
