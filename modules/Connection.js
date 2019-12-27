@@ -7,6 +7,7 @@ const worldTemplate = require("./worldTemplate.js");
 const permissions = require("./connection/permissions.js")
 const Case = require('./connection/cases.js');
 const Bucket = require("./connection/Bucket.js")
+const Commands = require("./connection/Commands.js")
 
 class Connection {
 	constructor(ws, req, worlds, bans, manager, updateClock) {
@@ -28,8 +29,33 @@ class Connection {
 		switch(who) {
 			case "world":
 			this.world.clients.forEach(function(client) {
-				client.send(msg)
+				client.send(msg);
 			})
+			break;
+			case "worldstaff":
+			this.world.clients.forEach(function(client) {
+				if(client.rank > permissions.user) {
+					client.send(msg);
+				}
+			})
+			break;
+			case "all":
+			for(var i = 0; i < this.worlds.length; i++) {
+				for(var c = 0; c < this.worlds[i].clients.length; c++) {
+					var client = this.worlds[i].clients[c]
+					client.send(msg);
+				}
+			}
+			break;
+			case "allstaff":
+			for(var i = 0; i < this.worlds.length; i++) {
+				for(var c = 0; c < this.worlds[i].clients.length; c++) {
+					var client = this.worlds[i].clients[c]
+					if(client.rank > permissions.user) {
+						client.send(msg);
+					}
+				}
+			}
 			break;
 		}
 	}
@@ -69,7 +95,7 @@ class Connection {
 				}
 				if (chat.length <= 512 || this.client.rank > permissions.user) {
 					if (chat[0] == "/") {
-
+						new Commands(chat, this.client, this.world, this.worlds, this.manager)
 					} else {
 						this.sendTo("world", before + ": " + chat)
 					}
