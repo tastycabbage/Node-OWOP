@@ -9,7 +9,7 @@ const Case = require('./connection/cases.js');
 const Bucket = require("./connection/Bucket.js")
 
 class Connection {
-	constructor(ws, req, worlds, bans, manager) {
+	constructor(ws, req, worlds, bans, manager, updateClock) {
 		this.ws = ws;
 		this.req = req;
 		this.bans = bans
@@ -17,9 +17,9 @@ class Connection {
 		this.worlds = worlds
 		this.world = null;
 		this.client = new Client(ws, req);
+		this.updateClock = updateClock
 		this.player = false
 
-		//ws.on("message", function (msg) this.onMessage(msg, this.client, this.world, this.worlds, this.req, this.ws, this.player));
 		ws.on("message", this.onMessage.bind(this));
 		ws.on("close", this.onClose.bind(this));
 		ws.on("error", this.onError.bind(this));
@@ -34,7 +34,7 @@ class Connection {
 		var isBinary = (typeof message == "object");
 		if (this.player && isBinary) {
 			//cases
-			new Case(message, this.client, this.world, this.worlds, this.manager).case()
+			new Case(message, this.client, this.world, this.worlds, this.manager, this.updateClock).case()
 		} else if (this.player && !isBinary) {
 			//messages and commands
 
@@ -143,7 +143,7 @@ class Connection {
 		var worldIndex = this.worlds.indexOf(this.world);
 		var clIdx = this.world.clients.indexOf(this.client);
 		if (clIdx > -1) {
-			//doUpdatePlayerLeave(worldName, client.id)
+			this.updateClock.doUpdatePlayerLeave(this.world.name, this.client.id)
 			delete this.world.clients[clIdx]
 			this.world.clients.sort().pop()
 		}

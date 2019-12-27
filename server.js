@@ -4,6 +4,9 @@ const ws = require("ws");
 const discord = require("discord.js");
 const request = require("request");
 const EventEmitter = require("events");
+const UpdateClock = require("./modules/UpdateClock.js")
+var worlds = [];
+var updateClock = new UpdateClock(worlds)
 
 
 //server variables
@@ -20,7 +23,7 @@ const manager = require("./modules/manager.js")
 //public variables
 
 var terminatedSocketServer = false;
-var worlds = [];
+
 var serverEvents = new EventEmitter();
 
 
@@ -56,7 +59,7 @@ function createWSServer() {
 			ws.send(new Uint8Array([protocol.server.captcha, captchaStates.ok]))
 		}
 
-		var connection = new Connection(ws, req, worlds, bans, manager);
+		var connection = new Connection(ws, req, worlds, bans, manager, updateClock);
 	});
 }
 
