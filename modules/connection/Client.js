@@ -14,6 +14,7 @@ class Client {
 		this.tool = 0;
 		this.id = 0;
 		this.nick = "";
+		this.before = "";
 		this.send = function(data) {
 			try {
 				ws.send(data);
@@ -21,6 +22,7 @@ class Client {
 		}
 		this.stealth = false;
 		this.rank = 0;
+		this.rankName = "";
 		this.ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress).split(",")[0].replace('::ffff:', '');
 		this.world = "";
 		this.pixelBucket = new Bucket(0, 0);
@@ -39,16 +41,18 @@ class Client {
 		this.chatBucket = new Bucket(rate, per)
 	}
 	setRank(rank) {
+		if(rank > 3 ) rank = 3
+		if(rank < 0) rank = 0
 		this.send(new Uint8Array([protocol.server.setRank, rank]))
 		this.rank = rank
-		var rankName;
 		for(var i in permissions) {
 			if(permissions[i] == rank) {
-				rankName = i
+				this.rankName = i
 			}
 		}
-		var pixelBucket = config.bucket.pixel[rankName]
-		var chatBucket = config.bucket.chat[rankName]
+
+		var pixelBucket = config.bucket.pixel[this.rankName]
+		var chatBucket = config.bucket.chat[this.rankName]
 		this.setPixelBucket(pixelBucket[0], pixelBucket[1])
 		this.setChatBucket(chatBucket[0], chatBucket[1])
 	}
@@ -60,7 +64,37 @@ class Client {
 		id_dv.setUint32(1, this.id, true);
 		this.send(id)
 	}
-
+	teleport(x, y) {
+		this.x = x
+		this.y = y
+		let tp = new Uint8Array(9)
+		let tp_dv = new DataView(tp.buffer);
+		tp_dv.setUint8(0, protocol.server.teleport);
+		tp_dv.setUint32(1, x, true);
+		tp_dv.setUint32(5, y, true);
+		this.send(tp);
+	}
+	/*setNick(nick) {
+		this.nick = nick;
+		var tmpIsStaff = this.client.rank > permissions.user
+		var tmpIsMod = this.client.rank == permissions.mod
+		var tmpIsAdmin = this.client.rank == permissions.admin
+		if (this.client.stealth) {
+			tmpIsAdmin = false;
+			tmpIsMod = false;
+			tmpIsStaff = false;
+		}
+		if (tmpIsAdmin) this.client.before += "(A) ";
+		if (tmpIsMod) this.client.before += "(M) ";
+		if (this.client.nick && !tmpIsStaff) {
+			this.client.before += `[${this.client.id}] ${this.client.nick}`;
+		} else if (this.client.nick && tmpIsStaff) {
+			this.client.before += this.client.nick;
+		}
+		if (!this.client.nick) {
+			this.client.before += this.client.id;
+		}
+	}*/
 };
 
 module.exports = Client;

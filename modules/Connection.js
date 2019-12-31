@@ -73,6 +73,7 @@ class Connection {
 			//cases
 			new Case(message, this.client, this.world, this.worlds, this.manager, this.updateClock).case()
 		} else if (this.player && !isBinary) {
+			if(!this.client.chatBucket.canSpend(1)) return;
 			var tmpIsStaff = this.client.rank > permissions.user
 			var tmpIsMod = this.client.rank == permissions.mod
 			var tmpIsAdmin = this.client.rank == permissions.admin
@@ -92,8 +93,9 @@ class Connection {
 			if (!this.client.nick) {
 				before += this.client.id;
 			}
+			this.client.before = before
 			if (len > 1 && message[len - 1] == String.fromCharCode(10)) {
-				var chat = message.slice(0, len - 1);
+				var chat = message.slice(0, len - 1).trim();
 				if (this.client.rank <= permissions.user) {
 					chat = chat.replace(/</g, "&lt;")
 					chat = chat.replace(/>/g, "&gt;")

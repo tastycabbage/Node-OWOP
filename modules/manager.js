@@ -197,10 +197,10 @@ function world_unload(worldName) {
 
 
 
-function get_prop(worldName, key) {
+function get_prop(worldName, key, defval) {
 	if(!loadedProps[worldName]) throw "World " + worldName + " is not initialized";
 	if(key in loadedProps[worldName].data) return loadedProps[worldName].data[key];
-	return null;
+	return defval;
 }
 
 function set_prop(worldName, key, val) {
@@ -346,6 +346,7 @@ module.exports = {
     set_pixel,
     set_chunk_rgb,
     close_database,
+		updateDatabase,
     chunk_is_protected
 };
 /*

@@ -1,7 +1,6 @@
 {
 	"adminlogin": "your_admin_pass",
 	"modlogin": "your_mod_pass",
-	"global_chat_pw": "your_global_pass",
 	"iplimit": true,
 	"maxconnectionsperip": 3,
 	"maxconnections": 500,

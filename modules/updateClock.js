@@ -57,7 +57,7 @@ class UpdateClock {
   		for (var u = 0; u < pxupdates.length; u++) {
   			var client = pxupdates[u];
 
-        upd_dv.setInt32(offs, client.id, true);
+        upd_dv.setInt32(offs, u, true);
   			upd_dv.setInt32(offs + 4, client.x, true);
   			upd_dv.setInt32(offs + 4 + 4, client.y, true);
   			upd_dv.setUint8(offs + 4 + 4 + 4, client.r);

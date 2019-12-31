@@ -60,7 +60,7 @@ if (process.platform === "win32") {
 		process.emit("SIGINT");
 	});
 }
-process.on("SIGINT", function() {
+async function exit() {
 	console.log("Exiting...");
 	for (var w in worlds) {
 		var world = worlds[w];
@@ -69,9 +69,11 @@ process.on("SIGINT", function() {
 			client.send(config.messages.closeMsg);
 		}
 	}
-	manager.close_database()
+	await manager.close_database()
 	process.exit()
-});
+}
+process.on("SIGINT", exit)
+process.on("beforeExit", exit);
 var serverOpNick = "";
 var serverOpRank = 3;
 rl.on("line", function(d) {
@@ -89,16 +91,7 @@ rl.on("line", function(d) {
 			console.log("/nick <nick> - Changes your nick.");
 			console.log("/rank <user|moderator|admin|server|tell|discord> - Changes your rank. (Only affects messages.)");
 		} else if (cmdCheck[0] == "kill" || cmdCheck[0] == "stop") {
-			console.log("Exiting...");
-			for (var w in worlds) {
-				var world = worlds[w];
-				for (var c = 0; c < world.clients.length; c++) {
-					var client = world.clients[c];
-					client.send(config.messages.closeMsg);
-				}
-			}
-			manager.close_database()
-			process.exit()
+			exit()
 		} else if (cmdCheck[0] == "eval" || cmdCheck[0] == "js") {
 			try {
 				console.log(String(eval(argString)));
