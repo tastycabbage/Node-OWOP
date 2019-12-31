@@ -28,6 +28,7 @@
 	"captcha": {
 		"enabled": false,
 		"serverKey": "",
-		"clientSideVerificationKey": "CaptchA"
+		"clientSideVerificationKey": "CaptchA",
+		"bypassCode": ""
 	}
 }

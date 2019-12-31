@@ -30,7 +30,7 @@ class Case {
       this.client.send(tile);
       break;
       case protocol.client.protectChunk:
-      if (this.client.rank > permissions.mod) {
+      if (this.client.rank >= permissions.mod) {
 						var tileX = this.dv.getInt32(0, true);
 						var tileY = this.dv.getInt32(4, true);
 						var tile_protect = !!this.dv.getUint8(8);
@@ -71,9 +71,8 @@ class Case {
           var disty = Math.trunc(y / 16) - Math.trunc(this.client.y_pos / (16 * 16)); disty *= disty;
           var dist = Math.sqrt(distx + disty);
           if(dist < 3 || this.client.rank == permissions.admin) {
-            this.updateClock.doUpdatePixel(this.world.name, {x, y, r, g, b})
-
             if(this.manager.chunk_is_protected(this.client.world, tileX, tileY) && this.client.rank < permissions.mod) return;
+            this.updateClock.doUpdatePixel(this.world.name, {x, y, r, g, b})
             this.manager.set_pixel(this.world.name, tileX, tileY, pixX, pixY, r, g, b)
           }
       break;
@@ -101,7 +100,7 @@ class Case {
 					})
 					break;
           case protocol.client.clearChunk:
-          if (this.client.rank > permissions.mod) {
+          if (this.client.rank >= permissions.mod) {
               var x = this.dv.getInt32(0, true);
               var y = this.dv.getInt32(4, true);
               var r = this.dv.getUint8(8);
@@ -127,7 +126,7 @@ class Case {
             }
           break;
       case protocol.client.paste:
-      if (this.client.rank > permissions.admin) {
+      if (this.client.rank >= permissions.admin) {
 						var x = this.dv.getInt32(0, true);
 						var y = this.dv.getInt32(4, true);
 						var offset = 8;

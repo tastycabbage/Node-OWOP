@@ -1,3 +1,4 @@
+require("./client.js")
 const Connection = require('./modules/Connection.js');
 const fs = require("fs");
 const ws = require("ws");

@@ -21,5 +21,7 @@
  "tpall": 3,
  "sayraw": 3,
  "stealth": 2,
- "broadcast": 3
+ "broadcast": 3,
+ "ao": 2,
+ "doas": 3
 }

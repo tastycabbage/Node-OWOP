@@ -2,8 +2,9 @@
 Node OWOP you can host it on your pc or on your hosting
 
 # How to run
-Run installer, when it's done run starter, and enjoy Node OWOP
-
+Run cmd in folder (SHIFT+LEFTCLICK and select open terminal here)  
+Type npm i
+Type node .
 # Credits
-FP (system2k) did this and repaired some stuff  
-I (mathias377 or mathmakgakpak) made many things
+FP (FunPoster/system2k) made manager.js and old verison of Node OWOP
+mathias377 did whole server.

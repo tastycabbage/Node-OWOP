@@ -74,27 +74,6 @@ class Client {
 		tp_dv.setUint32(5, y, true);
 		this.send(tp);
 	}
-	/*setNick(nick) {
-		this.nick = nick;
-		var tmpIsStaff = this.client.rank > permissions.user
-		var tmpIsMod = this.client.rank == permissions.mod
-		var tmpIsAdmin = this.client.rank == permissions.admin
-		if (this.client.stealth) {
-			tmpIsAdmin = false;
-			tmpIsMod = false;
-			tmpIsStaff = false;
-		}
-		if (tmpIsAdmin) this.client.before += "(A) ";
-		if (tmpIsMod) this.client.before += "(M) ";
-		if (this.client.nick && !tmpIsStaff) {
-			this.client.before += `[${this.client.id}] ${this.client.nick}`;
-		} else if (this.client.nick && tmpIsStaff) {
-			this.client.before += this.client.nick;
-		}
-		if (!this.client.nick) {
-			this.client.before += this.client.id;
-		}
-	}*/
 };
 
 module.exports = Client;

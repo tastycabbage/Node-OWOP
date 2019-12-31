@@ -20,7 +20,6 @@ class Commands {
 		} else if (typeof this[this.command] == "undefined") {
 			this.client.send("Command not recognized")
 		}
-
 	}
 	sendTo(who, msg) {
 		switch (who) {
@@ -155,9 +154,6 @@ class Commands {
 			this.client.send("Wrong password.");
 		}
 	}
-	help() {
-
-	}
 	tp() {
 		let target
 
@@ -211,12 +207,99 @@ class Commands {
 
 		if (target) {
 			target.teleport(x, y)
-			target.send(message)
+			this.client.send(message)
 		}
 	}
   	tpall() {
-			
+
     }
+		kick() {
+			var id = parseInt(args[0]);
+			var target = this.world.clients.find(function(item) {
+				return item.id == id
+			}.bind(this))
+			if (id && target) {
+								sendStaff(`DEVKicked: ${id}`)
+								client.send(`Kicked: ${id}`)
+								target.ws.close();
+							} else if (!target && id) {
+								client.send(`User ${id} not found.`)
+							} else if (!id) {
+								client.send("Usage: /kick id")
+							}
+		}
+		ao() {
+
+		}
+		whois() {
+
+		}
+		banip() {
+
+		}
+		ban() {
+
+		}
+		unban() {
+
+		}
+		unbanip() {
+
+		}
+		kick() {
+
+		}
+		kickip() {
+
+		}
+		disconnect() {
+			this.client.send("Disconnected");
+			this.client.ws.close();
+		}
+		help() {
+
+		}
+		tellraw() {
+			var id =  this.args[0];
+			var message = this.args;
+			message.shift()
+			message = message.join(" ")
+			var target = this.world.clients.find(function(item) {
+				return item.id == id
+			}.bind(this))
+			if (message && target) {
+				target.send(message);
+			} else {
+				this.client.send("Usage:\n /tellraw [id] [message]")
+			}
+		}
+		tell() {
+
+		}
+		getid() {
+			return // cuz it does't works
+			var nick = this.args.join(" ");
+			var listOfIds = [];
+
+			if(nick) {
+				console.log(this.world.clients)
+				for(var i = 0; i < this.world.clients; i++) {
+					var client = this.world.clients[i]
+
+					if(client.nick == nick) {
+						listOfIds.push(client.id);
+					}
+				}
+				if(listOfIds.length) {
+					var ids = listOfIds.join(" ")
+					this.client.send("There is " + listOfIds.length + "ids. \n" + ids)
+				} else {
+					this.client.send("There is no ids")
+				}
+			} else {
+				this.client.send("Usage:\n /getId [nick]")
+			}
+		}
 }
 	/*save() {
 		//this.manager

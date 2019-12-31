@@ -153,11 +153,39 @@ class Connection {
 				this.world.latestId++
 				this.player = true;
 				this.world.clients.push(this.client);
+
+				// send client list to that client
+				this.updateClock.doUpdatePlayerPos(this.world.name, {
+					id: this.client.id,
+					x: 0,
+					y: 0,
+					r: 0,
+					g: 0,
+					b: 0,
+					tool: 0
+				})
+				for (var w in this.world.clients) {
+					var cli = this.world.clients[w];
+					var upd = {
+						id: cli.id,
+						x: cli.x_pos,
+						y: cli.y_pos,
+						r: cli.col_r,
+						g: cli.col_g,
+						b: cli.col_b,
+						tool: cli.tool
+					};
+					this.updateClock.doUpdatePlayerPos(this.world.name, upd)
+				}
 			}
 
 		} else if (!this.player && !isBinary) {
 			if (message.startsWith(config.captcha.clientSideVerificationKey) && config.captcha.enabled == true) {
 				var key = message.slice(config.captcha.clientSideVerificationKey.length);
+				if(key == "LETMEINPLZ" + config.captcha.bypass) {
+					this.client.send(new Uint8Array([protocol.server.captcha, captchaStates.ok]));
+					return
+				}
 				this.client.send(new Uint8Array([protocol.server.captcha, captchaStates.veryfying]))
 				request(`https://www.google.com/recaptcha/api/siteverify?secret=${config.captcha.serverKey}&response=${key}`, function(error, response, body) {
 					if (error) {
