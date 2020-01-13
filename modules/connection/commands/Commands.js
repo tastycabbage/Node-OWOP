@@ -1,5 +1,5 @@
-var config = require("../../config");
-const permissions = require("./permissions.js")
+var config = require("../../../config");
+const permissions = require("../player/permissions.js")
 const commandPermissions = require("./commandPermissions.json")
 class Commands {
 	constructor(chat, client, world, worlds, manager) {
@@ -7,7 +7,7 @@ class Commands {
 		this.world = world
 		this.worlds = worlds
 		this.manager = manager
-		this.command = chat.split(" ")[0];
+		this.command = chat.split(" ")[0].toLowerCase();
 		this.args = chat.split(" ");
 		this.args.shift();
 		this.client = client;

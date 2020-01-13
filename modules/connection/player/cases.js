@@ -1,6 +1,6 @@
-const protocol = require('./protocol.js');
-const getTile = require('./getTile.js');
-const compress_data_to = require("./compressData.js")
+const protocol = require('../../server/protocol.js');
+const getTile = require('../world/getTile.js');
+const compress_data_to = require("../world/compressData.js")
 const permissions = require("./permissions.js")
 class Case {
   constructor(message, client, world, worlds, manager, updateClock) {
@@ -13,6 +13,7 @@ class Case {
     this.data = new Uint8Array(this.message)
     this.dv = new DataView(this.data.buffer)
     this.len = this.message.length;
+    this.case()
   }
   case() {
     switch(this.len) {

@@ -1,4 +1,4 @@
-const protocol = require("./protocol.js");
+const protocol = require("../../server/protocol.js");
 function compress_data_to(data, tileX, tileY, protection) {
 	var result = new Uint8Array(16 * 16 * 3 + 10 + 4);
 	var s = 16 * 16 * 3;

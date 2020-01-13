@@ -1,4 +1,4 @@
-const protocol = require("./connection/protocol.js");
+const protocol = require("./protocol.js");
 class UpdateClock {
   constructor(worlds) {
     this.interval = Math.floor(1000 / 60);

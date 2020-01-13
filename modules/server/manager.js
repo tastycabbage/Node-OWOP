@@ -2,6 +2,7 @@
 Big thanks to FP(FunPoster/system2k) for converting eldit file extension .pxr to Node JS
 */
 var fs = require("fs");
+//var config = require()
 
 
 var database_path = "./chunkdata/";

@@ -14,7 +14,7 @@
 	"bucket": {
 		"pixel": {
 			"none": [0, 1],
-			"user": [50, 4],
+			"user": [48, 4],
 			"mod": [32, 2],
 			"admin": [32, 0]
 		},
@@ -26,7 +26,7 @@
 		}
 	},
 	"captcha": {
-		"enabled": false,
+		"security": 0, //remove this comment 0 - off 1 - shows captcha only once 2 - show captcha always 3 - not ended
 		"serverKey": "",
 		"clientSideVerificationKey": "CaptchA",
 		"bypassCode": ""

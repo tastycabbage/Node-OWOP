@@ -1,19 +1,18 @@
 require("./client.js")
-const Connection = require('./modules/Connection.js');
+
 const fs = require("fs");
 const ws = require("ws");
 const discord = require("discord.js");
 const request = require("request");
-const UpdateClock = require("./modules/UpdateClock.js")
-const manager = require("./modules/manager.js")
+
+const Connection = require('./modules/Connection.js');
+const UpdateClock = require("./modules/server/UpdateClock.js")
+const manager = require("./modules/server/manager.js")
 var worlds = [];
 var updateClock = new UpdateClock(worlds)
 var bansIgnore = false;
 var wss;
 var config = require("./config.json");
-var protocol = require("./modules/connection/protocol.js")
-var captchaStates = require("./modules/captchaStates.js")
-var worldTemplate = require("./modules/worldTemplate.js");
 var bans = require("./bans.json")
 var terminatedSocketServer = false;
 

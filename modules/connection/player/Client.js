@@ -1,7 +1,7 @@
 const Bucket = require('./Bucket');
-const protocol = require("./protocol.js");
+const protocol = require("../../server/protocol.js");
 const permissions = require("./permissions.js")
-var config = require("../../config");
+var config = require("../../../config");
 class Client {
 	constructor(ws, req) {
 		this.ws = ws;
