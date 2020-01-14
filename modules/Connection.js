@@ -29,40 +29,6 @@ class Connection {
 
 		this.captcha.show()
   }
-  sendTo(who, msg) {
-    switch (who) {
-      case "world":
-        this.world.clients.forEach(function(client) {
-          client.send(msg);
-        })
-        break;
-      case "worldstaff":
-        this.world.clients.forEach(function(client) {
-          if (client.rank > permissions.user) {
-            client.send(msg);
-          }
-        })
-        break;
-      case "all":
-        for (var i = 0; i < this.worlds.length; i++) {
-          for (var c = 0; c < this.worlds[i].clients.length; c++) {
-            var client = this.worlds[i].clients[c]
-            client.send(msg);
-          }
-        }
-        break;
-      case "allstaff":
-        for (var i = 0; i < this.worlds.length; i++) {
-          for (var c = 0; c < this.worlds[i].clients.length; c++) {
-            var client = this.worlds[i].clients[c]
-            if (client.rank > permissions.user) {
-              client.send(msg);
-            }
-          }
-        }
-        break;
-    }
-  }
   onMessage(message) {
     var data = new Uint8Array(message)
     var dv = new DataView(data.buffer)

@@ -15,12 +15,12 @@ class Commands {
 		if (typeof this[this.command] == "function" && this.command != "sendTo") {
 			if(commandPermissions[this.command] <= this.client.rank) {
 				this[this.command]();
-			} else {
+			}/* else {
 				this.client.send("You can't use this command!")
-			}
-		} else if (typeof this[this.command] == "undefined") {
+			}*/
+		}/* else if (typeof this[this.command] == "undefined") {
 			this.client.send("Command not recognized")
-		}
+		}*/
 	}
 	sendTo(who, msg) {
 		switch (who) {

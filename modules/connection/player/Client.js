@@ -22,7 +22,6 @@ class Client {
 		}
 		this.stealth = false;
 		this.rank = 0;
-		this.rankName = "";
 		this.ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress).split(",")[0].replace('::ffff:', '');
 		this.world = "";
 		this.pixelBucket = new Bucket(0, 0);
@@ -45,14 +44,15 @@ class Client {
 		if(rank < 0) rank = 0
 		this.send(new Uint8Array([protocol.server.setRank, rank]))
 		this.rank = rank
+		let rankName;
 		for(var i in permissions) {
 			if(permissions[i] == rank) {
-				this.rankName = i
+				rankName = i
 			}
 		}
 
-		var pixelBucket = config.bucket.pixel[this.rankName]
-		var chatBucket = config.bucket.chat[this.rankName]
+		var pixelBucket = config.bucket.pixel[rankName]
+		var chatBucket = config.bucket.chat[rankName]
 		this.setPixelBucket(pixelBucket[0], pixelBucket[1])
 		this.setChatBucket(chatBucket[0], chatBucket[1])
 	}
