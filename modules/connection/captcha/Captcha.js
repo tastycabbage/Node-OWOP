@@ -3,10 +3,7 @@ const request = require("request");
 const protocol = require("../../server/protocol.js")
 let config = require("../../../config.json");
 let verifedIps = {};
-let Recaptcha = require('recaptcha-verify');
-let recaptcha = new Recaptcha({
-  secret: config.captcha.serverKey
-});
+
 class Captcha {
   constructor(client, worlds) {
     this.client = client;
@@ -99,30 +96,3 @@ class Captcha {
   }
 }
 module.exports = Captcha
-
-/*if (message.startsWith(config.captcha.clientSideVerificationKey) && config.captcha.enabled == true) {
-  var key = message.slice(config.captcha.clientSideVerificationKey.length);
-  if (key == "LETMEINPLZ" + config.captcha.bypass) {
-    this.client.send(new Uint8Array([protocol.server.captcha, captchaStates.ok]));
-    return
-  }
-  this.client.send(new Uint8Array([protocol.server.captcha, captchaStates.veryfying]))
-  request(`https://www.google.com/recaptcha/api/siteverify?secret=${config.captcha.serverKey}&response=${key}`, function(error, response, body) {
-    if (error) {
-      this.client.send("Captcha error. Contact with administrator");
-      this.client.ws.close();
-    }
-    body = body.replace(/\r/g, '');
-    var jsonresponse = JSON.parse(body);
-    return jsonresponse;
-    if (jsonresponse.success == true) {
-      //client.send(new Uint8Array([protocol.server.captcha, captchaStates.verifed]));
-      this.client.send(new Uint8Array([protocol.server.captcha, captchaStates.ok]));
-    } else {
-      this.client.send("Wrong captcha!");
-      //client.send(new Uint8Array([protocol.server.captcha, captchaStates.verifed]));
-      this.client.send(new Uint8Array([protocol.server.captcha, captchaStates.invaild]));
-      this.client.ws.close()
-    }
-  }.bind(this))
-}*/

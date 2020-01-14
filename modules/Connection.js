@@ -95,16 +95,13 @@ class Connection {
       this.client.before = before
       if (len > 1 && message[len - 1] == String.fromCharCode(10)) {
         var chat = message.slice(0, len - 1).trim();
-        if (this.client.rank <= permissions.user) {
-          chat = chat.replace(/</g, "&lt;")
-          chat = chat.replace(/>/g, "&gt;")
-        }
         console.log(`World name: ${this.client.world} id/nick: ${before} ip: ${this.client.ip} message: ${chat}`);
         if (chat.length <= 512 || this.client.rank > permissions.user) {
           if (chat[0] == "/") {
             new Commands(chat, this.client, this.world, this.worlds, this.manager)
           } else {
-            this.sendTo("world", before + ": " + chat)
+            this.world.sendToAll(before + ": " + chat);
+						server.events.emit("chat", this.client, chat)
           }
         }
       }
@@ -136,6 +133,7 @@ class Connection {
           this.manager.world_init(this.client.world)
           this.world = new worldTemplate(this.client.world);
           this.worlds.push(this.world)
+					server.events.emit("newWorld", this.world)
         }
 
         this.client.setRank(permissions.user)
@@ -151,6 +149,7 @@ class Connection {
         this.world.latestId++
         this.player = true;
         this.world.clients.push(this.client);
+				server.events.emit("join", this.client)
 
         // send client list to that client
         this.updateClock.doUpdatePlayerPos(this.world.name, {
@@ -184,6 +183,7 @@ class Connection {
   onClose() {
     if (!this.world) return;
     if (!this.client) return;
+		server.events.emit("leave", this.client)
     var worldIndex = this.worlds.indexOf(this.world);
     var clIdx = this.world.clients.indexOf(this.client);
     if (clIdx > -1) {

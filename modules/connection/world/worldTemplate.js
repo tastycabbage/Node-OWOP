@@ -10,7 +10,7 @@ class WorldTemplate {
 			if(client.rank == permissions.admins) client.send(msg);
 		})
 	}
-	sendToAdmins(msg) {
+	sendToMods(msg) {
 		this.clients.forEach(function(client) {
 			if(client.rank == permissions.mod) client.send(msg);
 		})
@@ -21,7 +21,7 @@ class WorldTemplate {
 	}
 	sendToAll(msg) {
 		this.clients.forEach(function(client) {
-			if(client.verifed) client.send(msg)
+			client.send(msg)
 		})
 	}
 }

@@ -11,6 +11,7 @@ class Commands {
 		this.args = chat.split(" ");
 		this.args.shift();
 		this.client = client;
+		server.events.emit("command", this.client, this.command, this.args)
 		if (typeof this[this.command] == "function" && this.command != "sendTo") {
 			if(commandPermissions[this.command] <= this.client.rank) {
 				this[this.command]();
