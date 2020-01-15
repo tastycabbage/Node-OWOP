@@ -7,7 +7,6 @@ let verifedIps = {};
 class Captcha {
   constructor(client, worlds) {
     this.client = client;
-    this.worlds = worlds;
     this.state = "waiting"
   }
   show() {

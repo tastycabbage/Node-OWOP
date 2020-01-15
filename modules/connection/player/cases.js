@@ -3,13 +3,10 @@ const getTile = require('../world/getTile.js');
 const compress_data_to = require("../world/compressData.js")
 const permissions = require("./permissions.js")
 class Case {
-  constructor(message, client, world, worlds, manager, updateClock) {
-    this.updateClock = updateClock
-    this.manager = manager
+  constructor(message, client, world) {
     this.message = message
     this.client = client
     this.world = world
-    this.worlds = world
     this.data = new Uint8Array(this.message)
     this.dv = new DataView(this.data.buffer)
     this.len = this.message.length;
@@ -28,7 +25,7 @@ class Case {
         var x = this.dv.getInt32(0, true);
         var y = this.dv.getInt32(4, true);
         server.events.emit("requestChunk", this.client, x, y)
-        var tile = getTile(this.world.name, x, y, this.manager);
+        var tile = getTile(this.world.name, x, y, server.manager);
         this.client.send(tile);
         break;
       case protocol.client.protectChunk:
@@ -38,7 +35,7 @@ class Case {
           var tile_protect = !!this.dv.getUint8(8);
           server.events.emit("protectChunk", this.client, tileX, tileY, tile_protect)
 
-          this.manager.set_chunk_protection(this.world.name, tileX, tileY, tile_protect);
+          server.manager.set_chunk_protection(this.world.name, tileX, tileY, tile_protect);
           var newState = new Uint8Array(10)
           var newState_dv = new DataView(newState.buffer);
           newState_dv.setUint8(0, protocol.server.chunkProtected);
@@ -75,16 +72,16 @@ class Case {
         disty *= disty;
         var dist = Math.sqrt(distx + disty);
         if (dist < 3 || this.client.rank == permissions.admin) {
-          if (this.manager.chunk_is_protected(this.client.world, tileX, tileY) && this.client.rank < permissions.mod) return;
+          if (server.manager.chunk_is_protected(this.client.world, tileX, tileY) && this.client.rank < permissions.mod) return;
           server.events.emit("setPixel", this.client, x, y, [r, g, b])
-          this.updateClock.doUpdatePixel(this.world.name, {
+          server.updateClock.doUpdatePixel(this.world.name, {
             x,
             y,
             r,
             g,
             b
           })
-          this.manager.set_pixel(this.world.name, tileX, tileY, pixX, pixY, r, g, b)
+          server.manager.set_pixel(this.world.name, tileX, tileY, pixX, pixY, r, g, b)
         }
         break;
       case protocol.client.playerUpdate:
@@ -102,7 +99,7 @@ class Case {
         this.client.col_g = g;
         this.client.col_b = b;
         this.client.tool = tool;
-        this.updateClock.doUpdatePlayerPos(this.world.name, {
+        server.updateClock.doUpdatePlayerPos(this.world.name, {
           id: this.client.id,
           x,
           y,
@@ -128,8 +125,8 @@ class Case {
             newData[i++] = g
             newData[i++] = b
           }
-          this.manager.set_chunk_rgb(this.world.name, x, y, newData);
-          var newTileUpdated = getTile(this.world.name, x, y, this.manager);
+          server.manager.set_chunk_rgb(this.world.name, x, y, newData);
+          var newTileUpdated = getTile(this.world.name, x, y);
           var clients = this.world.clients;
 
           for (var s = 0; s < clients.length; s++) {
@@ -151,9 +148,9 @@ class Case {
             newData[i] = this.dv.getUint8(i + offset);
           }
           server.events.emit("paste", this.client, x, y, newData)
-          this.manager.set_chunk_rgb(this.world.name, x, y, newData)
+          server.manager.set_chunk_rgb(this.world.name, x, y, newData)
 
-          var newTileUpdated = getTile(this.world.name, x, y, this.manager);
+          var newTileUpdated = getTile(this.world.name, x, y);
           var clients = this.world.clients;
 
           for (var s = 0; s < clients.length; s++) {

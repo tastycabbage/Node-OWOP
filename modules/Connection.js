@@ -11,17 +11,13 @@ const Commands = require("./connection/commands/Commands.js")
 const Captcha = require("./connection/captcha/Captcha.js");
 
 class Connection {
-  constructor(ws, req, worlds, bans, manager, updateClock) {
+  constructor(ws, req) {
     this.ws = ws;
     this.req = req;
-    this.bans = bans
-    this.manager = manager
-    this.worlds = worlds
     this.world = null;
     this.client = new Client(ws, req);
-    this.updateClock = updateClock
     this.player = false
-    this.captcha = new Captcha(this.client, this.worlds);
+    this.captcha = new Captcha(this.client, server.worlds);
 
     ws.on("message", this.onMessage.bind(this));
     ws.on("close", this.onClose.bind(this));
@@ -36,7 +32,7 @@ class Connection {
     var isBinary = (typeof message == "object");
     if (this.player && isBinary && this.captcha.state == "ok") {
       //cases
-      new Case(message, this.client, this.world, this.worlds, this.manager, this.updateClock)
+      new Case(message, this.client, this.world)
     } else if (this.player && !isBinary && this.captcha.state == "ok") {
       if (!this.client.chatBucket.canSpend(1)) return;
       var tmpIsStaff = this.client.rank > permissions.user
@@ -64,7 +60,7 @@ class Connection {
         console.log(`World name: ${this.client.world} id/nick: ${before} ip: ${this.client.ip} message: ${chat}`);
         if (chat.length <= 512 || this.client.rank > permissions.user) {
           if (chat[0] == "/") {
-            new Commands(chat, this.client, this.world, this.worlds, this.manager)
+            new Commands(chat, this.client, this.world)
           } else {
             this.world.sendToAll(before + ": " + chat);
 						server.events.emit("chat", this.client, chat)
@@ -92,25 +88,25 @@ class Connection {
         }
         this.client.world = this.client.world.replace(/[^a-zA-Z0-9\._]/gm, "").toLowerCase();
         if (!this.client.world) this.client.world = "main";
-        this.world = this.worlds.find(function(world) {
+        this.world = server.worlds.find(function(world) {
           return world.name == this.client.world
         }.bind(this));
         if (!this.world) {
-          this.manager.world_init(this.client.world)
+          server.manager.world_init(this.client.world)
           this.world = new worldTemplate(this.client.world);
-          this.worlds.push(this.world)
+          server.worlds.push(this.world)
 					server.events.emit("newWorld", this.world)
         }
 
         this.client.setRank(permissions.user)
 
-        var pass = this.manager.get_prop(this.world.name, "pass");
+        var pass = server.manager.get_prop(this.world.name, "pass");
         if (pass) {
           this.client.send(" [Server] This world has a password set. Use '/pass PASSWORD' to unlock drawing.")
           this.client.setRank(permissions.none)
         }
 
-        this.client.send(this.manager.get_prop(this.world.name, "motd"))
+        this.client.send(server.manager.get_prop(this.world.name, "motd"))
         this.client.setId(this.world.latestId)
         this.world.latestId++
         this.player = true;
@@ -118,7 +114,7 @@ class Connection {
 				server.events.emit("join", this.client)
 
         // send client list to that client
-        this.updateClock.doUpdatePlayerPos(this.world.name, {
+        server.updateClock.doUpdatePlayerPos(this.world.name, {
           id: this.client.id,
           x: 0,
           y: 0,
@@ -138,7 +134,7 @@ class Connection {
             b: cli.col_b,
             tool: cli.tool
           };
-          this.updateClock.doUpdatePlayerPos(this.world.name, upd)
+          server.updateClock.doUpdatePlayerPos(this.world.name, upd)
         }
       }
 
@@ -150,17 +146,17 @@ class Connection {
     if (!this.world) return;
     if (!this.client) return;
 		server.events.emit("leave", this.client)
-    var worldIndex = this.worlds.indexOf(this.world);
+    var worldIndex = server.worlds.indexOf(this.world);
     var clIdx = this.world.clients.indexOf(this.client);
     if (clIdx > -1) {
-      this.updateClock.doUpdatePlayerLeave(this.world.name, this.client.id)
+      server.updateClock.doUpdatePlayerLeave(this.world.name, this.client.id)
       delete this.world.clients[clIdx]
       this.world.clients.sort().pop()
     }
     if (!this.world.clients.length) {
-      this.manager.world_unload()
-      delete this.worlds[worldIndex]
-      this.worlds.sort().pop()
+      server.manager.world_unload()
+      delete server.worlds[worldIndex]
+      server.worlds.sort().pop()
     }
   }
   onError(error) {

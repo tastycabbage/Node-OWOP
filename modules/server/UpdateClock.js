@@ -1,9 +1,8 @@
 const protocol = require("./protocol.js");
 class UpdateClock {
-  constructor(worlds) {
+  constructor() {
     this.interval = Math.floor(1000 / 60);
     this.updates = {}
-    this.worlds = worlds
     this.updateClock();
   }
 
@@ -78,7 +77,7 @@ class UpdateClock {
 
   		delete this.updates[i];
 
-  		var wld = this.worlds.find(function(world) {return world.name == i}.bind(this));;
+  		var wld = server.worlds.find(function(world) {return world.name == i}.bind(this));;
   		if (!wld) continue; // Shouldn't happen
 
   		var clients = wld.clients;

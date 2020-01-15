@@ -4,7 +4,7 @@ module.exports = (() => {
   let version = "1.0.0"
 
   function install() {
-    let config = new server.ConfigManager(name, { //sitty
+    let config = new server.ConfigManager(name, { //shitty
       guildId: "",
       channelId: { //channelId: world
         "": "main"

@@ -9,40 +9,38 @@ const chalk = require("chalk")
 const Connection = require('./modules/Connection.js');
 const UpdateClock = require("./modules/server/UpdateClock.js")
 const manager = require("./modules/server/manager.js")
-var worlds = [];
-var updateClock = new UpdateClock(worlds)
 var bansIgnore = false;
 var wss;
 var config = require("./config.json");
-var bans = require("./bans.json")
 var terminatedSocketServer = false;
 const ConfigManager = require("./modules/server/ConfigManager.js")
 
 global.server = {
-  worlds,
-  bans,
+  worlds: [],
+  bans: require("./bans.json"),
   config,
+  updateClock: new UpdateClock(),
+  manager,
   events: new EventEmitter(),
   loadedScripts: [],
   disabledScripts: [],
  	ConfigManager
 };
 
-async function loadScripts() {
-  const dir = await fs.promises.opendir("./scripts");
-  for await (const dirent of dir) {
-    if (!dirent.name.startsWith("-") && dirent.name.endsWith(".js")) {
-      let script = require("./scripts/" + dirent.name);
+function loadScripts() {
+	fs.readdirSync("./scripts").forEach(file => {
+		if (!file.startsWith("-") && file.endsWith(".js")) {
+      let script = require("./scripts/" + file);
       if (typeof script.name == "string" && typeof script.version == "string" && typeof script.install == "function") {
         script.install()
         console.log(chalk.green(`Loaded script ${script.name} version ${script.version}`))
-        server.loadedScripts.push(dirent.name)
+        server.loadedScripts.push(file)
       } else {
-        console.error(chalk.red(`Script ${dirent.name} doesn't follow syntax!`))
-        server.disabledScripts.push(dirent.name)
+        console.error(chalk.red(`Script ${file} doesn't follow syntax!`))
+        server.disabledScripts.push(file)
       }
     }
-  }
+	});
 }
 loadScripts()
 
@@ -71,7 +69,7 @@ function createWSServer() {
     		}
     	}
     }*/
-    var connection = new Connection(ws, req, worlds, bans, manager, updateClock);
+    var connection = new Connection(ws, req);
   });
 }
 
@@ -92,14 +90,14 @@ if (process.platform === "win32") {
 }
 async function exit() {
   console.log("Exiting...");
-  for (var w in worlds) {
-    var world = worlds[w];
+  for (var w in server.worlds) {
+    var world = server.worlds[w];
     for (var c = 0; c < world.clients.length; c++) {
       var client = world.clients[c];
       client.send(config.messages.closeMsg);
     }
   }
-  await manager.close_database()
+  await server.manager.close_database()
   process.exit()
 }
 process.on("SIGINT", exit)
@@ -146,8 +144,8 @@ rl.on("line", function(d) {
     }
   } else {
     function sendToWorlds(msg) {
-      for (var gw in worlds) {
-        var worldCurrent = worlds[gw];
+      for (var gw in server.worlds) {
+        var worldCurrent = server.worlds[gw];
         var clientsOfWorld = worldCurrent.clients;
         for (var s = 0; s < clientsOfWorld.length; s++) {
           var sendToClient = clientsOfWorld[s].send;

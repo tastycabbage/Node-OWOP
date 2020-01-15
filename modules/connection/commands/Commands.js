@@ -2,11 +2,9 @@ var config = require("../../../config");
 const permissions = require("../player/permissions.js")
 const commandPermissions = require("./commandPermissions.json")
 class Commands {
-	constructor(chat, client, world, worlds, manager) {
+	constructor(chat, client, world) {
 		chat = chat.substr(1);
 		this.world = world
-		this.worlds = worlds
-		this.manager = manager
 		this.command = chat.split(" ")[0].toLowerCase();
 		this.args = chat.split(" ");
 		this.args.shift();
@@ -21,40 +19,6 @@ class Commands {
 		}/* else if (typeof this[this.command] == "undefined") {
 			this.client.send("Command not recognized")
 		}*/
-	}
-	sendTo(who, msg) {
-		switch (who) {
-			case "world":
-				this.world.clients.forEach(function(client) {
-					client.send(msg);
-				})
-				break;
-			case "worldstaff":
-				this.world.clients.forEach(function(client) {
-					if (client.rank > permissions.user) {
-						client.send(msg);
-					}
-				})
-				break;
-			case "all":
-				for (var i = 0; i < this.worlds.length; i++) {
-					for (var c = 0; c < this.worlds[i].clients.length; c++) {
-						var client = this.worlds[i].clients[c]
-						client.send(msg);
-					}
-				}
-				break;
-			case "allstaff":
-				for (var i = 0; i < this.worlds.length; i++) {
-					for (var c = 0; c < this.worlds[i].clients.length; c++) {
-						var client = this.worlds[i].clients[c]
-						if (client.rank > permissions.user) {
-							client.send(msg);
-						}
-					}
-				}
-				break;
-		}
 	}
 	adminlogin() {
 		var password = this.args.join(" ");
@@ -94,10 +58,10 @@ class Commands {
 		value.shift()
 		value = value.join(" ").trim()
 		if (property && value) {
-			this.manager.set_prop(this.world.name, property, value)
-			this.sendTo("worldstaff", `DEVSet world property ${property} to ${value}`)
+			server.manager.set_prop(this.world.name, property, value)
+			this.world.sendToAdmins(`DEVSet world property ${property} to ${value}`)
 		} else if (property && !value) {
-			this.client.send(`Value of ${property} is ${this.manager.get_prop(this.world.name, property, "undefined")}`)
+			this.client.send(`Value of ${property} is ${server.manager.get_prop(this.world.name, property, "undefined")}`)
 		} else if (!property) {
 			this.client.send("Usage:\n /setprop [property] [value]\n or /setprop [property] to get value")
 		}
@@ -105,7 +69,7 @@ class Commands {
 	sayraw() {
 		var message = this.args.join(" ");
 		if (message) {
-			this.sendTo("world", message);
+			this.world.sendToAll(message);
 		} else {
 			this.client.send("Usage:\n /sayraw [message]")
 		}
@@ -113,6 +77,9 @@ class Commands {
 	broadcast() {
 		var message = this.args.join(" ");
 		if (message) {
+			server.worlds.forEach(function(world) {
+				world.sendToAll(`<span style='color: #ffff00'>[GLOBAL]</span> ${message}`)
+			})
 			this.sendTo("all", `<span style='color: #ffff00'>[GLOBAL]</span> ${message}`);
 		} else {
 			this.client.send("Usage:\n /broadcast [message]")
@@ -141,14 +108,15 @@ class Commands {
 		} else if (target.rank >= this.client.rank) {
 			this.client.send("You cannot change the rank of players who have a higher rank than you or equal.")
 		} else if (target && rank >= 0 && this.client.rank < rank) {
+			this.client.send("")
 			target.setRank(rank)
 		}
 	}
 	pass() {
 		var password = this.args.join(" ");
-		if (password == this.manager.get_prop(this.world.name, "pass")) {
+		if (password == server.manager.get_prop(this.world.name, "pass")) {
 			this.client.setRank(1);
-		} else if (password == this.manager.get_prop(this.world.name, "modlogin")) {
+		} else if (password == server.manager.get_prop(this.world.name, "modlogin")) {
 			this.client.setRank(2);
 			this.client.send("Server: You are now an moderator. Do /help for a list of commands.")
 		} else {
@@ -303,6 +271,6 @@ class Commands {
 		}
 }
 	/*save() {
-		//this.manager
+		//server.manager
 	}*/
 	module.exports = Commands;
