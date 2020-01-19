@@ -1,4 +1,5 @@
 //module by mathias377
+//I don't know why but in glitch you need wait some time when folder with config will show 
 module.exports = (() => {
   const Discord = require("discord.js");
   let name = "Discord Gateway"
