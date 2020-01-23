@@ -1,5 +1,5 @@
 # DOCS
-Variable `server` is global well you doesnt need to require it.
+Variable `server` is global well you doesn't need to require it.
 **All scripts need follow syntax.**
 **The makers of Node OWOP shall not be liable for damages caused by scripts of unknown origin, i.e. not from them.**
 **If you create a nice script I can check it and then approve and add it to trusted scripts.**
@@ -131,5 +131,13 @@ It returns id of client
 It returns nick of client
 ##### Client.x_pos or Client.y_pos
 returns x or y position of client
+##### Client.ip
+returns client ip
+##### Client.world
+returns client worldName
+##### Client.col_r or Client.col_g or Client.col_b
+returns r, g or b color of client
+
+
 
 To get more info about Client go to Client.js

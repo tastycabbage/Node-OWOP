@@ -71,18 +71,6 @@ class Connection {
 
       //player on real connect
       if (len > 2 && len - 2 <= 24 /*&& dv.getUint16(len - 2, true) == 1234 //world verification*/ ) {
-        if (config.antiproxy) {
-          request("http://proxycheck.io/v2/" + this.client.ip, function(error, response, body) {
-            body = body.replace(/\r/g, '');
-            var isproxy = JSON.parse(body).proxy;
-            if (isproxy == "yes") {
-              this.client.send("Proxy detected!");
-              this.client.ws.close()
-              return;
-            }
-          }.bind(this))
-        }
-
         for (var i = 0; i < data.length - 2; i++) {
           this.client.world += String.fromCharCode(data[i]);
         }
@@ -105,8 +93,10 @@ class Connection {
           this.client.send(" [Server] This world has a password set. Use '/pass PASSWORD' to unlock drawing.")
           this.client.setRank(permissions.none)
         }
-
-        this.client.send(server.manager.get_prop(this.world.name, "motd"))
+        var motd = server.manager.get_prop(this.world.name, "motd")
+        if(motd) {
+          this.client.send(motd)
+        }
         this.client.setId(this.world.latestId)
         this.world.latestId++
         this.player = true;

@@ -4,7 +4,6 @@ const fs = require("fs");
 const ws = require("ws");
 const request = require("request");
 const EventEmitter = require("events");
-const chalk = require("chalk")
 
 const Connection = require('./modules/Connection.js');
 const UpdateClock = require("./modules/server/UpdateClock.js")
@@ -14,8 +13,12 @@ var wss;
 var config = require("./config.json");
 var terminatedSocketServer = false;
 const ConfigManager = require("./modules/server/ConfigManager.js")
+const BansManager = require("./modules/server/BansManager.js")
+const proxy_check = require('proxycheck-node.js');
+
 
 global.server = {
+  chalk: require("chalk"),
   worlds: [],
   bans: require("./bans.json"),
   config,
@@ -24,57 +27,93 @@ global.server = {
   events: new EventEmitter(),
   loadedScripts: [],
   disabledScripts: [],
- 	ConfigManager
+  ConfigManager,
+  bansManager: new BansManager(),
+  players: require("./modules/connection/player/players.js"),
+  antiProxy: new proxy_check({
+    api_key: config.antiProxy.key
+  })
 };
 
+server.events.on("savedWorlds", function() {
+  console.log("Saved Worlds")
+  server.players.sendToAll("DEVSaved Worlds", 3) //3 means rank (admin)
+})
+
 function loadScripts() {
-	fs.readdirSync("./scripts").forEach(file => {
-		if (!file.startsWith("-") && file.endsWith(".js")) {
+  fs.readdirSync("./scripts").forEach(file => {
+    if (!file.startsWith("-") && file.endsWith(".js")) {
       let script = require("./scripts/" + file);
       if (typeof script.name == "string" && typeof script.version == "string" && typeof script.install == "function") {
         script.install()
-        console.log(chalk.green(`Loaded script ${script.name} version ${script.version}`))
+        console.log(server.chalk.green(`Loaded script ${script.name} version ${script.version}`))
         server.loadedScripts.push(file)
       } else {
-        console.error(chalk.red(`Script ${file} doesn't follow syntax!`))
+        console.error(server.chalk.red(`Script ${file} doesn't follow syntax!`))
         server.disabledScripts.push(file)
       }
     }
-	});
+  });
 }
 loadScripts()
+
 
 function createWSServer() {
   wss = new ws.Server({
     port: config.port
   });
-  wss.on("connection", function(ws, req) {
+  wss.on("connection", async function(ws, req) {
     if (terminatedSocketServer) {
       ws.send(config.closeMsg)
       ws.close();
     }
-    /*if(ban.ip) {
-    	if(!ban.expires_at) {
-    		this.client.send("You got perm ban. Apeal for unban on: " + config.unbanLink)
-    		this.client.send("Reason: " + ban.reason)
-    		this.client.ws.close()
-    	} else {
-    		if(Date.now() < parseInt(ban.expires_at)) {
-    			let date = new Date(parseInt(ban.expires_at));
-    			this.client.send(`You are temp-banned.`)
-    			this.client.send(`It expires at ${date.getYear()}-${date.getMonth()}-${date.getDay()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
-    			this.client.send("Apeal for unban on: " + config.unbanLink)
-    			this.client.send("Reason: " + ban.reason)
-    			this.client.ws.close()
-    		}
-    	}
-    }*/
-    var connection = new Connection(ws, req);
+    let ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress).split(",")[0].replace('::ffff:', '');
+
+    if (server.bansManager.checkIfIsBanned(ip)) {
+      let ban = server.bansManager.bans[ip]
+      if (!isNaN(ban.duration)) {
+        let banString = server.bansManager.generateString(server.bansManager.banEndsAfter(ip))
+        ws.send(`${server.config.messages.unbanMessage}\nYou are banned for ${banString}\nReason: ${ban.reason}`);
+      } else {
+        ws.send(`${server.config.messages.unbanMessage}\nYou are permanently banned!\nReason: ${ban.reason}`);
+      }
+      ws.close();
+      return;
+    }
+    if (server.config.maxConnections > 0) {
+      if (server.players.getAllPlayers().length >= server.config.maxConnections) { //yes ik about that if there is many players this is slow method... or not?
+        ws.send("Reached max connections limit")
+        ws.close();
+        return;
+      }
+    }
+    if (server.config.maxConnectionsPerIp > 0) {
+      if (server.players.getAllPlayersWithIp(ip).length >= server.config.maxConnectionsPerIp) { //its equal cuz this client isn't in any world
+        ws.send("Reached max connections per ip limit")
+        ws.close();
+        return;
+      }
+    }
+    if (config.antiProxy.enabled) {
+      let result = await server.antiProxy.check(ip, {
+        vpn: server.config.antiProxy.vpnCheck,
+        limit: server.config.antiProxy.limit
+      });
+      if (result.status == "denied" && result.message[0] == "1") {
+        console.log(server.chalk.red("Check your dashboard the queries limit reached!"))
+      }
+      if (result.error || !result[ip]) return;
+      if (result[ip].proxy == "yes") {
+        ws.close()
+        server.bansManager.addBanIp(ip, "Proxy!", 0)
+      }
+    }
+
+    new Connection(ws, req);
   });
 }
 
 function beginServer() {
-  //loadDatabase()
   createWSServer()
   console.log("Server started. Type /help for help")
 }

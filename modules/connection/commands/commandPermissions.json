@@ -12,7 +12,7 @@
  "kickip": 3,
  "banip": 3,
  "ban": 3,
- "unban": 3,
+ "unbanip": 3,
  "getid": 2,
  "whois": 3,
  "setrank": 3,
@@ -22,5 +22,6 @@
  "stealth": 2,
  "broadcast": 3,
  "ao": 3,
- "doas": 3
+ "doas": 3,
+ "save": 3
 }

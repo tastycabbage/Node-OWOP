@@ -11,7 +11,7 @@ var protocol = {
 		maxCount: 8
 	},
 	client: {
-		antiCheat: 1,
+		rankVerification: 1,
 		//captcha: 6,
 		requestChunk: 8,
 		protectChunk: 10,

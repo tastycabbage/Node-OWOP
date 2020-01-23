@@ -14,7 +14,7 @@ class Case {
   }
   case () {
     switch (this.len) {
-      case protocol.client.anticheat:
+      case protocol.client.rankVerification:
         var clientRank = this.dv.getUint8(0);
         if (clientRank > this.client.rank) {
           this.client.send("Do not cheat!")
@@ -43,12 +43,7 @@ class Case {
           newState_dv.setInt32(5, tileY, true);
           newState_dv.setUint8(9, tile_protect);
 
-          var clients = this.world.clients;
-
-          for (var s = 0; s < clients.length; s++) {
-            var current_send = clients[s].send;
-            current_send(newState)
-          }
+          server.players.sendToWorld(this.world.name, newState)
         } else {
           this.client.ws.close()
         }
@@ -127,13 +122,8 @@ class Case {
           }
           server.manager.set_chunk_rgb(this.world.name, x, y, newData);
           var newTileUpdated = getTile(this.world.name, x, y);
-          var clients = this.world.clients;
 
-          for (var s = 0; s < clients.length; s++) {
-            var current_send = clients[s].send;
-            current_send(newTileUpdated)
-          }
-
+          server.players.sendToWorld(this.world.name, newTileUpdated)
         } else {
           this.client.ws.close();
         }
@@ -151,12 +141,7 @@ class Case {
           server.manager.set_chunk_rgb(this.world.name, x, y, newData)
 
           var newTileUpdated = getTile(this.world.name, x, y);
-          var clients = this.world.clients;
-
-          for (var s = 0; s < clients.length; s++) {
-            var current_send = clients[s].send;
-            current_send(newTileUpdated)
-          }
+          server.players.sendToWorld(this.world.name, newTileUpdated)
         } else {
           this.client.ws.close();
         }

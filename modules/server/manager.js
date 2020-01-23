@@ -324,6 +324,7 @@ function updateDatabase() {
 		delete chunkCache[world];
 		delete chunkWrites[world];
 	}
+	server.events.emit("savedWorlds") //remove it if you want use it for your project
 }
 
 var databaseUpdateRate = 1000 * 60 * 5;

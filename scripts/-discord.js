@@ -1,12 +1,10 @@
-//module by mathias377
-//I don't know why but in glitch you need wait some time when folder with config will show 
 module.exports = (() => {
   const Discord = require("discord.js");
   let name = "Discord Gateway"
-  let version = "1.0.4"
+  let version = "1.0.0"
 
   function install() {
-    let config = new server.ConfigManager(name, {
+    let config = new server.ConfigManager(name, { //shitty
       guildId: "",
       channelId: { //channelId: world
         "": "main"
@@ -34,6 +32,7 @@ module.exports = (() => {
         if (message.author.bot) return;
         if (message.channel.type === "dm") return;
 
+        //if (configg.enablePings == false) message.content = message.content.replace(/<@([0-9]+)>/g, "(here ping)");
         let world = server.worlds.find(function(world) {
           return world.name == config.channelId[message.channel.id]
         });
@@ -45,7 +44,6 @@ module.exports = (() => {
     server.events.on("chat", function(client, msg) {
       var channelId = getKeyByValue(config.channelId, client.world)
       if (channelId == false) return;
-      if (client.rank != 3) msg = msg.replace(/<@.!?([0-9]+)>/g, "(here ping)");
       let before = client.before.replace(/<(?:alt=("|')(.+?)\1|.|\n)+>/gm, "$2");
       bot.guilds.get(config.guildId).channels.get(channelId).send(`${before}: ${msg}`)
     })
