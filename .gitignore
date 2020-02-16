@@ -3,3 +3,4 @@
 /chunkdata
 /database/database.db-journal
 /database/database.db
+package-lock.json

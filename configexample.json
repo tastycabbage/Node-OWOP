@@ -14,7 +14,7 @@
 	"port": 8000,
 	"maxNickLength": 12,
 	"messages": {
-		"_comment": "change 'Nobody likes YOU'"
+		"_comment": "change 'Nobody likes YOU'",
 		"unbanMessage": "https://discord.gg/DTGAq4b",
 		"closeMsg": "Server is restarting...",
 		"defaultBanReason": "Nobody likes YOU"

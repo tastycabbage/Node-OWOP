@@ -62,7 +62,7 @@ class Connection {
           if (chat[0] == "/") {
             new Commands(chat, this.client, this.world)
           } else {
-            this.world.sendToAll(before + ": " + chat);
+            server.players.sendToWorld(this.client.world, before + ": " + chat);
 						server.events.emit("chat", this.client, chat)
           }
         }
