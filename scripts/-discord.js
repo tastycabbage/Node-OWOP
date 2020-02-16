@@ -35,7 +35,7 @@ module.exports = (() => {
         //if (configg.enablePings == false) message.content = message.content.replace(/<@([0-9]+)>/g, "(here ping)");
 
         if (world) {
-          erver.players.sendToWorld(config.channelId[message.channel.id], `[D] ${message.author.username}: ${message.content}`)
+          server.players.sendToWorld(config.channelId[message.channel.id], `[D] ${message.author.username}: ${message.content}`)
         }
       }
     });
