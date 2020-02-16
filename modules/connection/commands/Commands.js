@@ -202,7 +202,12 @@ class Commands {
     }
   }
   ao() {
-
+    var msg = this.args.join(" ");
+    if(msg) {
+      server.players.sendToAll(` [${this.client.world}] [${this.client.id}] ${this.client.nick}: ${msg}`, commandsPermissions[this.command])
+    } else {
+      this.client.send("Usage:\n /ao [message]")
+    }
   }
   whois() {
     let id = parseInt(this.args[0]);
@@ -345,6 +350,14 @@ class Commands {
     }
     helpString = helpString.slice(0, helpString.length - 2)
     this.client.send(helpString)
+  }
+  bans() {
+    var string = "Bans:\n";
+    for(var i in server.bansManager.bans) {
+      var ban = server.bansManager.bans[i];
+      string+=`${i}: ${ban.reason}`
+    }
+    this.client.send(string)
   }
   tellraw() {
     var id = parseInt(this.args[0]);

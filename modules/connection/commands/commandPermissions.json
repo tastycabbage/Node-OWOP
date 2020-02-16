@@ -16,6 +16,7 @@
  "getid": 2,
  "whois": 3,
  "setrank": 3,
+ "bans": 3,
  "tp": 3,
  "tpall": 3,
  "sayraw": 3,
