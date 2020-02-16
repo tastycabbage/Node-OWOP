@@ -33,11 +33,9 @@ module.exports = (() => {
         if (message.channel.type === "dm") return;
 
         //if (configg.enablePings == false) message.content = message.content.replace(/<@([0-9]+)>/g, "(here ping)");
-        let world = server.worlds.find(function(world) {
-          return world.name == config.channelId[message.channel.id]
-        });
+
         if (world) {
-          world.sendToAll(`[D] ${message.author.username}: ${message.content}`)
+          erver.players.sendToWorld(config.channelId[message.channel.id], `[D] ${message.author.username}: ${message.content}`)
         }
       }
     });
