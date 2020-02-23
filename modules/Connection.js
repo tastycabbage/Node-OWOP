@@ -35,33 +35,40 @@ class Connection {
       new Case(message, this.client, this.world)
     } else if (this.player && !isBinary && this.captcha.state == "ok") {
       if (!this.client.chatBucket.canSpend(1)) return;
-      var tmpIsStaff = this.client.rank > permissions.user
-      var tmpIsMod = this.client.rank == permissions.mod
-      var tmpIsAdmin = this.client.rank == permissions.admin
-      var before = "";
-      if (this.client.stealth) {
-        tmpIsAdmin = false;
-        tmpIsMod = false;
-        tmpIsStaff = false;
-      }
-      if (tmpIsAdmin) before += "(A) ";
-      if (tmpIsMod) before += "(M) ";
-      if (this.client.nick && !tmpIsStaff) {
-        before += `[${this.client.id}] ${this.client.nick}`;
-      } else if (this.client.nick && tmpIsStaff) {
-        before += this.client.nick;
-      }
-      if (!this.client.nick) {
-        before += this.client.id;
-      }
-      this.client.before = before
       if (len > 1 && message[len - 1] == String.fromCharCode(10)) {
         var chat = message.slice(0, len - 1).trim();
+
         console.log(`World name: ${this.client.world} id/nick: ${before} ip: ${this.client.ip} message: ${chat}`);
         if (chat.length <= 512 || this.client.rank > permissions.user) {
           if (chat[0] == "/") {
             new Commands(chat, this.client, this.world)
           } else {
+            if(this.client.rank < permissions.mod) {
+              var string=chat.split("\n").slice(0, 3).join("\n"); //weirdo way
+              string+=chat.split("\n").slice(3).join("")
+              chat = string;
+            }
+            var tmpIsStaff = this.client.rank > permissions.user
+            var tmpIsMod = this.client.rank == permissions.mod
+            var tmpIsAdmin = this.client.rank == permissions.admin
+            var before = "";
+            if (this.client.stealth) {
+              tmpIsAdmin = false;
+              tmpIsMod = false;
+              tmpIsStaff = false;
+            }
+            if (tmpIsAdmin) before += "(A) ";
+            if (tmpIsMod) before += "(M) ";
+            if (this.client.nick && !tmpIsStaff) {
+              before += `[${this.client.id}] ${this.client.nick}`;
+            } else if (this.client.nick && tmpIsStaff) {
+              before += this.client.nick;
+            }
+            if (!this.client.nick) {
+              before += this.client.id;
+            }
+            this.client.before = before
+            
             server.players.sendToWorld(this.client.world, before + ": " + chat);
 						server.events.emit("chat", this.client, chat)
           }

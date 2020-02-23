@@ -42,6 +42,9 @@ class Commands {
   }
   nick() {
     var newNick = this.args.join(" ");
+    if(this.client.rank < permissions.admin) {
+      newNick = newNick.replace(/\n/gm, "")
+    }
     if (newNick.length == 0) {
       this.client.nick = "";
       this.client.send("Nickname reset.");
