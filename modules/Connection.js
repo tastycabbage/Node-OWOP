@@ -50,14 +50,14 @@ class Connection {
             }
             var tmpIsStaff = this.client.rank > permissions.user
             var tmpIsMod = this.client.rank == permissions.mod
-            var tmpIsAdmin = this.client.rank == permissions.admin
+            var tmpIsBob = this.client.rank == permissions.bob
             var before = "";
             if (this.client.stealth) {
-              tmpIsAdmin = false;
+              tmpIsBob = false;
               tmpIsMod = false;
               tmpIsStaff = false;
             }
-            if (tmpIsAdmin) before += "(A) ";
+            if (tmpIsBob) before += "(bob) ";
             if (tmpIsMod) before += "(M) ";
             if (this.client.nick && !tmpIsStaff) {
               before += `[${this.client.id}] ${this.client.nick}`;

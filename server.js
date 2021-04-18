@@ -37,7 +37,7 @@ global.server = {
 
 server.events.on("savedWorlds", function() {
   console.log("Saved Worlds")
-  server.players.sendToAll("DEVSaved Worlds", 3) //3 means rank (admin)
+  server.players.sendToAll("DEVSaved Worlds", 3) //3 means rank (bob)
 })
 
 function loadScripts() {
@@ -156,7 +156,7 @@ rl.on("line", function(d) {
       console.log("/stop, /kill - Closes the server.");
       console.log("/js, /eval <code> - Evaluates the given code.");
       console.log("/nick <nick> - Changes your nick.");
-      console.log("/rank <user|moderator|admin|server|tell|discord> - Changes your rank. (Only affects messages.)");
+      console.log("/rank <user|moderator|bob|server|tell|discord> - Changes your rank. (Only affects messages.)");
     } else if (cmdCheck[0] == "kill" || cmdCheck[0] == "stop") {
       exit()
     } else if (cmdCheck[0] == "eval" || cmdCheck[0] == "js") {
@@ -173,12 +173,12 @@ rl.on("line", function(d) {
         console.log("Nickname reset.");
       }
     } else if (cmdCheck[0] == "rank") {
-      var rankIndex = ["user", "moderator", "admin", "server", "tell", "discord"].indexOf(cmdCheck[1].toLowerCase())
+      var rankIndex = ["user", "moderator", "bob", "server", "tell", "discord"].indexOf(cmdCheck[1].toLowerCase())
       if (~rankIndex) {
         serverOpRank = rankIndex;
         console.log("Set rank to " + cmdCheck[1].toLowerCase() + ".");
       } else {
-        console.log("Usage: /rank <user|moderator|admin|server|tell|discord>")
+        console.log("Usage: /rank <user|moderator|bob|server|tell|discord>")
       }
     }
   } else {
@@ -192,7 +192,7 @@ rl.on("line", function(d) {
         }
       }
     }
-    sendToWorlds((serverOpNick && ["[0] ", "", " ", "[Server] "][serverOpRank] || ["", "(M) ", "(A) ", "Server", "-> ", "[D] "][serverOpRank]).trimLeft() + (serverOpNick || (serverOpRank == 3 ? "" : "0")) + ": " + msg);
+    sendToWorlds((serverOpNick && ["[0] ", "", " ", "[Server] "][serverOpRank] || ["", "(M) ", "(bob) ", "Server", "-> ", "[D] "][serverOpRank]).trimLeft() + (serverOpNick || (serverOpRank == 3 ? "" : "0")) + ": " + msg);
   }
 });
 beginServer()

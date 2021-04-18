@@ -1,5 +1,5 @@
 const permissions = {
-	admin: 3,
+	bob: 3,
 	mod: 2,
 	user: 1,
 	none: 0

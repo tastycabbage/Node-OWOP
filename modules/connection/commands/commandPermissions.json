@@ -1,7 +1,7 @@
 {
  "help": 0,
  "nick": 0,
- "adminlogin": 0,
+ "boblogin": 0,
  "modlogin": 0,
  "disconnect": 0,
  "setprop": 3,
@@ -24,5 +24,6 @@
  "broadcast": 3,
  "ao": 3,
  "doas": 3,
- "save": 3
+ "save": 3,
+ "bob": 3
 }

@@ -22,13 +22,13 @@ class Commands {
     			this.client.send("Command not recognized")
     		}*/
   }
-  adminlogin() {
+  boblogin() {
     var password = this.args.join(" ");
-    if (password == config.adminlogin) {
-      this.client.setRank(permissions.admin)
-      this.client.send("Server: You are now an admin. Do /help for a list of commands.")
+    if (password == config.boblogin) {
+      this.client.setRank(permissions.bob)
+      this.client.send("Server: You are now an bob. Do /help for a list of commands.")
     } else {
-      this.client.send("Wrong password.")
+      this.client.send("Wrong bob.")
     }
   }
   modlogin() {
@@ -64,7 +64,7 @@ class Commands {
     value = value.join(" ").trim()
     if (property && value) {
       server.manager.set_prop(this.world.name, property, value)
-      server.players.sendToAll(`DEVSet world property ${property} to ${value}`, permissions.admin)
+      server.players.sendToAll(`DEVSet world property ${property} to ${value}`, permissions.bob)
     } else if (property && !value) {
       this.client.send(`Value of ${property} is ${server.manager.get_prop(this.world.name, property, "undefined")}`)
     } else if (!property) {
@@ -426,6 +426,14 @@ class Commands {
   }
   doas() {
 
+  }
+  bob() {
+    var bob = this.args.join(" ");
+    if (bob) {
+      server.players.sendToAll(`<span style='color: #ff0000'>[bob's GLOBAL]</span> ${bob}`)
+    } else {
+      this.client.send("Usage:\n /bob [bob msg]")
+    }
   }
 }
 
